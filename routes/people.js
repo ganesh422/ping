@@ -13,7 +13,7 @@ router.post('/new', function(req, res){
 
     console.log('\nPOST request for /people/new  ::--> got data');
     try{
-    	console.log(req.body.email + '\n' + req.body.name + '\n' + req.body.pseudo + '\n' + req.body.wp + '\n');
+    	console.log(req.body.vale + '\n' + req.body.valn + '\n' + req.body.valps + '\n' + req.body.valp + '\n');
 	}catch(ex){
 		console.log('ERROR: ' + ex);
 	}
@@ -28,7 +28,7 @@ router.post('/login', function(req, res){
 
 	console.log('\nPOST request for /people/login  ::--> got data');
 	try{
-    	console.log(req.body.emailpseudo + '\n' + req.body.wp + '\n');
+    	console.log(req.body.vale + '\n' + req.body.valp + '\n');
 	}catch(ex){
 		console.log('ERROR: ' + ex);
 	}
