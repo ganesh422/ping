@@ -96,14 +96,14 @@ function set_welcome_keypress_listeners(){
 	$(".login").bind("keypress", function (e) {
 	    var key = e.which || e.keyCode;
 	    if (key == 13) { // 13 is enter
-	      login();
+	    	$("#loginbutton_login").click();
 	    }
 	});
 
 	$(".reg").bind("keypress", function (e) {
 	    var key = e.which || e.keyCode;
 	    if (key == 13) { // 13 is enter
-	      register();
+	    	$("#regbutton_reg").click();
 	    }
 	});
 }
