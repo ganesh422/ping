@@ -5,6 +5,5 @@ var app = require('../app');
 app.set('port', process.env.PORT || 1337);
 
 var server = app.listen(app.get('port'), function() {
-  console.info('Qi server listening on port ' + server.address().port);
+  console.info('Ping server listening on port ' + server.address().port);
 });
-
