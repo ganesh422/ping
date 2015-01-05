@@ -1,8 +1,12 @@
 // angular stuff
 // login and registration controllers
 // this is used via ng-app="welcome" on #container in index.jade
+//
+// data.isValid, errorHappened, irRegistered, etc. are jsons returned by people.js
+// they are returned with HTTP status codes
 var app = angular.module("welcome", []);
 
+// login controller
 app.controller("sign_in", function($scope, $http){
     $scope.login = function(){
     	if($scope.emailpseudo_login == undefined || $scope.wp_login == undefined){
@@ -19,17 +23,25 @@ app.controller("sign_in", function($scope, $http){
 			    }
 		    });
 		    /* Check whether the HTTP Request is successful or not. */
-			request.success(function(){
-			    printError("success!!");
+			request.success(function(data){
+			    if(data.isValid){
+					printError("SUCCESS!!!");
+				}
 			});
 
-			request.error(function(){
-				printError("error.");
+			request.error(function(data){
+				if(!data.isValid){
+					printError("password is invalid.");
+				}else if(data.errorHappened){
+					printError("error at login.");
+				}
 			});
 		}
 	}
 });
 
+
+// registration controller
 app.controller("sign_up", function($scope, $http){
 	$scope.register = function(){
 		if($scope.email_reg == undefined || 
@@ -56,17 +68,28 @@ app.controller("sign_up", function($scope, $http){
 			        valp: $scope.wp_reg
 			    }
 		    });
+
 		    /* Check whether the HTTP Request is successful or not. */
-			request.success(function(){
-			    printError("success!!");
+			request.success(function(data){
+				if(data.isRegistered){
+					window.location = "/";
+				}
 			});
 
-			request.error(function(){
-				printError("error.");
+			request.error(function(data){
+				if(!data.isRegistered){
+					printError("ERROR AT REGISTRATION");
+				}else if(data.errorHappened){
+					printError("ERROR AT REGISTRATION");
+				}
 			});
 		}
 	}
 });
+
+
+
+
 
 // all click listeners for the welcome page
 // for the "links" to change the forms between login and register

@@ -1,7 +1,9 @@
 html
   head
     meta(charset='utf8')
-    title ping
+    //color for chrome
+    meta(name="theme-color" content="#3F51B5")
+    title
     //link(rel="shortcut icon" type="image/x-icon" href="favicon.ico")
     link(rel='stylesheet', href='/components/bootstrap/bootstrap_paper.css')
     link(rel='stylesheet', href='/stylesheets/welcome.css')
@@ -26,7 +28,7 @@ html
     center
         #container(ng-app="welcome")
             #loginpanel.loginpanel.active(ng-controller="sign_in")
-                input#emailpseudoinput_login.login.input(type="text" placeholder="email/pseudo" maxlength="50" ng-model="emailpseudo_login")
+                input#emailpseudoinput_login.login.input(type="text" placeholder="email" maxlength="50" ng-model="emailpseudo_login")
                 br
                 input#pwinput_login.login.input(type="password" placeholder="password" ng-model="wp_login")
                 br
@@ -39,5 +41,5 @@ html
                 input#pwinput_reg.reg.input(type="password" placeholder="password" ng-model="wp_reg")
                 input#pwrinput_reg.reg.input(type="password" placeholder="repeat password" ng-model="wpr_reg")
                 br
-                input#regbutton_reg.reg(type="button" value="Create my account" ng-cick="register()")
+                input#regbutton_reg.reg(type="button" value="Create my account" ng-click="register()")
                 p#gotologin_reg You already have an account? Log in here

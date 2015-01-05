@@ -7,7 +7,8 @@ var favicon = require('serve-favicon');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var fs = require('fs');
-var passport = require('passport');
+//var passport = require('passport');
+var debug = require('debug')('NodeJS');
 
 // routes
 var routes = require('./routes/index');
