@@ -68,18 +68,27 @@ router.post('/login', function(req, res){
                     return;
                 }
 
-                if(rows[0].wp == req.body.valp){
-                    console.log("password is correct");
-                    res.status(200).json({isValid:true});
+                for (var i = rows.length - 1; i >= 0; i--) {
+                    console.log(rows[i]);
+                };
+
+                if(rows.length > 0){
+                    if(rows[0].wp == req.body.valp){
+                        console.log("password is correct");
+                        res.status(200).json({isValid:true});
+                    }else{
+                        console.log("password is invalid");
+                        res.status(403).json({isValid:false});
+                    }
                 }else{
-                    console.log("password is invalid");
-                    res.status(403).json({isValid:false});
+                    console.log("QUERY RESULT FOR USER " + req.body.vale + " RETURNED NO RESULT!")
+                    res.status(403).json({userNotFound:true});
                 }
 
+                //debugging
                 console.log(query.sql);
                 console.log(rows[0]);
-                console.log(req.body.valp);
-                console.log(rows[0].wp); 
+                console.log(req.body.valp); 
 
                 // release connection for next request
                 connection.release();

@@ -2,7 +2,7 @@
 // login and registration controllers
 // this is used via ng-app="welcome" on #container in index.jade
 //
-// data.isValid, errorHappened, irRegistered, etc. are jsons returned by people.js
+// data.isValid, errorHappened, irRegistered, userNotFound are jsons returned by people.js
 // they are returned with HTTP status codes
 var app = angular.module("welcome", []);
 
@@ -22,6 +22,7 @@ app.controller("sign_in", function($scope, $http){
 			        valp: $scope.wp_login
 			    }
 		    });
+		    
 		    /* Check whether the HTTP Request is successful or not. */
 			request.success(function(data){
 			    if(data.isValid){
@@ -30,7 +31,13 @@ app.controller("sign_in", function($scope, $http){
 			});
 
 			request.error(function(data){
-				if(!data.isValid){
+				console.log("LOGIN ERROR");
+				if(data.userNotFound){
+					printError("there is no user with this email.")
+					goto_reg();
+				}else if(!data.isValid){
+					$("#pwinput_login").val("");
+					$("#pwinput_login").focus();
 					printError("password is invalid.");
 				}else if(data.errorHappened){
 					printError("error at login.");
@@ -51,12 +58,20 @@ app.controller("sign_up", function($scope, $http){
 			printError("please fill all fields.")
 		}else if(!checkIfEmailInString /*method in misc.js*/($scope.email_reg)){
 			printError('the email address you entered is not valid.');
+			$("#emailinput_reg").focus();
 		}else if($scope.name_reg.length < 4){
 			printError('the name you entered was not long enough.');
+			$("#nameinput_reg").focus();
 		}else if($scope.wp_reg.length < 6){
 			printError('the password you entered was not long enough.');
+			$("#pwinput_reg").val("");
+			$("#pwrinput_reg").val("");
+			$("#pwinput_reg").focus();
 		}else if($scope.wp_reg != $scope.wpr_reg){
 			printError('the passwords you entered do not match.');
+			$("#pwinput_reg").val("");
+			$("#pwrinput_reg").val("");
+			$("#pwinput_reg").focus();
 		}else{
 			var request = $http({
     			method: "post",
@@ -77,6 +92,7 @@ app.controller("sign_up", function($scope, $http){
 			});
 
 			request.error(function(data){
+				console.log("REGISTRATION ERROR");
 				if(!data.isRegistered){
 					printError("ERROR AT REGISTRATION");
 				}else if(data.errorHappened){
@@ -96,22 +112,32 @@ app.controller("sign_up", function($scope, $http){
 // for the registration and login button
 function set_welcome_click_listeners(){
 	$("#gotoreg_login").bind("click", function () {
-		$(":input").val("");
-		$("#regbutton_reg").val("Create my account");
-		$(".registerpanel").addClass("active");
-		$(".loginpanel").removeClass("active");
-		$(".loginpanel").hide();
-		$(".registerpanel").show();
+		goto_reg();
 	});
 
 	$("#gotologin_reg").bind("click", function () {
-		$(":input").val("");
-		$("#loginbutton_login").val("Log in");
-		$(".loginpanel").addClass("active");
-		$(".registerpanel").removeClass("active");
-		$(".registerpanel").hide();
-		$(".loginpanel").show();
+		goto_login();
 	});
+}
+
+function goto_reg(){
+	$(":input").val("");
+	$("#regbutton_reg").val("Create my account");
+	$(".registerpanel").addClass("active");
+	$(".loginpanel").removeClass("active");
+	$(".loginpanel").hide();
+	$(".registerpanel").show();
+	$("#emailinput_reg").focus();
+}
+
+function goto_login(){
+	$(":input").val("");
+	$("#loginbutton_login").val("Log in");
+	$(".loginpanel").addClass("active");
+	$(".registerpanel").removeClass("active");
+	$(".registerpanel").hide();
+	$(".loginpanel").show();
+	$("#emailpseudoinput_login").focus();
 }
 
 // listen for enter on the inputs
