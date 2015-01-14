@@ -33,7 +33,7 @@ app.controller("sign_in", function($scope, $http){
 			request.error(function(data){
 				console.log("LOGIN ERROR");
 				if(data.userNotFound){
-					printError("there is no user with this email.")
+					printError("there is no user with this email/pseudonym.")
 					goto_reg();
 				}else if(!data.isValid){
 					$("#pwinput_login").val("");
