@@ -60,30 +60,76 @@ router.post('/login', function(req, res){
 
             console.log('connected as id ' + connection.threadId);
 
-            var query = connection.query("SELECT wp from User WHERE eaddress=?", [req.body.vale], function(err, rows, fields) {
-                if (err){
-                    console.log("ERROR AT MYSQL QUERY");
-                    console.log(err);
-                    res.status(403).json({errorHappened:true});
-                    return;
-                }
+            if(checkIfEmailInString(req.body.vale)){
+                var query = connection.query("SELECT wp from User WHERE eaddress=?", [req.body.vale], function(err, rows, fields) {
+                    if (err){
+                        console.log("ERROR AT MYSQL QUERY");
+                        console.log(err);
+                        res.status(403).json({errorHappened:true});
+                        return;
+                    }
 
-                if(rows[0].wp == req.body.valp){
-                    console.log("password is correct");
-                    res.status(200).json({isValid:true});
-                }else{
-                    console.log("password is invalid");
-                    res.status(403).json({isValid:false});
-                }
+                    for (var i = rows.length - 1; i >= 0; i--) {
+                        console.log(rows[i]);
+                    };
 
-                console.log(query.sql);
-                console.log(rows[0]);
-                console.log(req.body.valp);
-                console.log(rows[0].wp); 
+                    if(rows.length > 0){
+                        if(rows[0].wp == req.body.valp){
+                            console.log("password is correct");
+                            res.status(200).json({isValid:true});
+                        }else{
+                            console.log("password is invalid");
+                            res.status(403).json({isValid:false});
+                        }
+                    }else{
+                        console.log("QUERY RESULT FOR USER " + req.body.vale + " RETURNED NO RESULT!")
+                        res.status(403).json({userNotFound:true});
+                    }
 
-                // release connection for next request
-                connection.release();
-            });
+                    //debugging
+                    console.log(query.sql);
+                    console.log(rows[0]);
+                    console.log(req.body.valp); 
+
+                    // release connection for next request
+                    connection.release();
+                });
+            }else{
+                console.log("GOT HERE!");
+                var query = connection.query("SELECT wp from User WHERE pseudo=?", [req.body.vale], function(err, rows, fields) {
+                    if (err){
+                        console.log("ERROR AT MYSQL QUERY");
+                        console.log(err);
+                        res.status(403).json({errorHappened:true});
+                        return;
+                    }
+
+                    for (var i = rows.length - 1; i >= 0; i--) {
+                        console.log(rows[i]);
+                    };
+
+                    if(rows.length > 0){
+                        if(rows[0].wp == req.body.valp){
+                            console.log("password is correct");
+                            res.status(200).json({isValid:true});
+                        }else{
+                            console.log("password is invalid");
+                            res.status(403).json({isValid:false});
+                        }
+                    }else{
+                        console.log("QUERY RESULT FOR USER " + req.body.vale + " RETURNED NO RESULT!")
+                        res.status(403).json({userNotFound:true});
+                    }
+
+                    //debugging
+                    console.log(query.sql);
+                    console.log(rows[0]);
+                    console.log(req.body.valp); 
+
+                    // release connection for next request
+                    connection.release();
+                });
+            }
         });
 	}catch(ex){
 		console.log('ERROR: ' + ex);
@@ -95,5 +141,11 @@ router.post('/login', function(req, res){
 router.get('/', function(req, res) {
     res.render('index.jade', {title: 'Qi People'});
 });
+
+// return true if email is valid
+function checkIfEmailInString(text) {
+    var re = /(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/;
+    return re.test(text);
+}
 
 module.exports = router;

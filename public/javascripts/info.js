@@ -19,7 +19,8 @@ function printError(msg, panel){
       $('#registerpanel').effect('shake');
     }
   }
-  alert(msg);  
+  alert(msg);
+  console.log(msg);
 }
 
 function printSuccess(msg){
