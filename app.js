@@ -7,8 +7,7 @@ var favicon = require('serve-favicon');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var fs = require('fs');
-//var passport = require('passport');
-var debug = require('debug')('NodeJS');
+var logger = require("./utils/logger");
 
 // routes
 var routes = require('./routes/index');
@@ -16,6 +15,24 @@ var people = require('./routes/people');
 var users = require('./routes/users');
 var ajax = require('./routes/ajax');
 var images = require('./routes/images');
+var sys = require('sys');
+
+// allow input in console
+// react to input in console
+var stdin = process.openStdin();
+stdin.addListener("data", function(d) {
+    // note:  d is an object, and when converted to a string it will
+    // end with a linefeed.  so we (rather crudely) account for that  
+    // with toString() and then substring() 
+    switch(d.toString().substring(0, d.length-1)){
+        case 'exit':
+            process.exit();
+            break;
+        case 'clear':
+            process.stdout.write('\033c');
+            break;
+    }
+});
 
 /* ==================================================================================
  *                                  VARIABLES
@@ -40,6 +57,8 @@ var options = {key: privateKey, cert: certificate};
 // initialise express
 var app = express();
 
+logger.debug("Overriding 'Express' logger");
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -63,7 +82,14 @@ app.use('/images', images);
 app.use('/hello/:name', function(req, res){
     res.send('Hello, ' + req.params.name);
 });
+/* GET demo page. */
+app.get('/demo', function(req, res) {
+  logger.info('GET request for /  ::--> returned demo.jade');
+  res.render('demo.jade', {"title": "ping"});
+});
 
+// logging
+app.use(require('morgan')({ "stream": logger.stream }));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -99,16 +125,16 @@ app.use(function(err, req, res, next) {
 
 try {
     http.createServer(app).listen(http_port);
-    console.info('HTTP Server listening on ' + http_port + '...');
+    logger.info('HTTP Server listening on ' + http_port + '...');
 }catch(ex){
-    console.error("COULDN'T START HTTP SERVER!");
-    console.error(ex);
+    logger.error("COULDN'T START HTTP SERVER!");
+    logger.error(ex);
 }
 
 try {
     https.createServer(options, app).listen(https_port);
-    console.info('HTTPS Server listening on ' + https_port + '...');
+    logger.info('HTTPS Server listening on ' + https_port + '...');
 }catch(ex){
-    console.error("COULDN'T START HTTPS SERVER!");
-    console.error(ex);
+    logger.error("COULDN'T START HTTPS SERVER!");
+    logger.error(ex);
 }

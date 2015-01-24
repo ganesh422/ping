@@ -93,8 +93,8 @@ app.controller("sign_up", function($scope, $http){
 
 			request.error(function(data){
 				console.log("REGISTRATION ERROR");
-				if(!data.isRegistered){
-					printError("ERROR AT REGISTRATION");
+				if(data.userAlreadyExists){
+					printError("USER ALREADY EXISTS");
 				}else if(data.errorHappened){
 					printError("ERROR AT REGISTRATION");
 				}
