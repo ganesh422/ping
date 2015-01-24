@@ -1,0 +1,33 @@
+html(ng-app='pingAngularDemoApp')
+  head
+    meta(charset='utf8')
+    title Ping Angular Demo
+    link(rel='stylesheet', href='/components/bootstrap/bootstrap_paper.css')
+  body
+    h1 Ping Angular Demo
+    .container
+      form
+        input#foodinput(type='text', ng-model='search' style='width: 500px;')
+        p(ng-show='search') Du suchst gerade nach: {{search}}
+      table.table(ng-controller='ArticlesCtrl')
+        tr(ng-repeat='speise in speisen | filter:search')
+          td {{speise.id}}
+          td {{speise.name}}
+          td {{speise.price}}
+    script(src='/components/angular/angular.js')
+    script.
+      document.getElementById('foodinput').focus();
+      'use strict';
+
+      angular.module('pingAngularDemoApp', [])
+        .controller('ArticlesCtrl', function($scope){
+          $scope.speisen = [
+            { id: 1, name: 'Pizza Vegetaria', price: '6€' },
+            { id: 2, name: 'Pizza Salami',    price: '6,50€' },
+            { id: 3, name: 'Pizza Tonno', price: '7€' },
+            { id: 4, name: 'Spaghetti Bolognese', price: '5€'},
+            { id: 5, name: 'Spaghetti Carbonara', price: '6€'},
+            { id: 6, name: 'Wiener Schnitzel', price: '6,20€'},
+            { id: 7, name: 'Fleischplatte', price: '4,50€'}
+          ];
+        });
