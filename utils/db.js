@@ -1,10 +1,13 @@
 /**
+ * Copyright (c) 2015 Michael Koeppl
+ *
  * Created by mko on 24/01/15.
  *
  * database related functions
  */
 
 var logger = require('../utils/logger');
+var crypto = require('crypto');
 
 /*
  * MongoDB
@@ -35,32 +38,47 @@ function insert_reg_mdb(req, res){
 	    // eventually start mongo shell with 'mongo'
     	mongoose.connect('mongodb://localhost/pingdb');
 		var db = mongoose.connection;
-		db.on('error', function(){
-			logger.error('connection error:');
+		db.on('error', function(err){
+			logger.error('connection error: ' + err.toString());
 			res.status(403).json({errorHappened:true});
 			return;
 		});
 		db.once('open', function callback() {
 		    logger.debug('connected to mongodb.');
-		    var schemes = require('../utils/db_schemes.js');
-		    var User = schemes.User;
+		    var User = require('../utils/dbschemes/user.js').User;
 
 	    	// the new user itself is created based on the model
 	      	// the data given by the user is inserted
 	      	var newUser = new User({
-	        	eaddress: req.body.vale,
-	        	name: req.body.valn,
-                pseudo: req.body.valps,
-                wp: req.body.valp
-	      	});
+		       	eaddress: req.body.vale,
+		     	name: req.body.valn,
+	            pseudo: req.body.valps,
+	            wp: req.body.valp
+		    });
+
+	      	// example for adding a friend to the user's friendlist
+	      	// this has to be called and then .save
+	      	//
+		    //logger.debug('added friend 54c4f981aaf109c82436efcf');
+            //newUser.friends.push(mongoose.Types.ObjectId('54c4f981aaf109c82436efcf'));
 
 	      	// the new user's data gets saved
 	      	newUser.save(function(err,thor){
 	      		if(err){
 	      			logger.error(err.toString());
-	      			if(err.toString().indexOf('duplicate key error index') > -1){
-	      				logger.error('user already exists.');
-	      				res.status(403).json({userAlreadyExists:true});
+	      			if(err.toString() == 'ValidationError: This pseudonym is already registered, This email address is already registered'){
+	      				logger.error('user (email ("'+req.body.vale+'") and pseudo ("'+req.body.valps+'")) already exists');
+	      				res.status(403).json({emailandpseudoInUse:true});
+	      				mongoose.disconnect();
+	      				return;
+	      			}else if(err.toString() == 'ValidationError: This email address is already registered'){
+	      				logger.error('user (email ("'+req.body.vale+'")) already exists.');
+	      				res.status(403).json({emailInUse:true});
+	      				mongoose.disconnect();
+	      				return;
+	      			}else if(err.toString() == 'ValidationError: This pseudonym is already registered'){
+	      				logger.error('user (pseudonym ("'+req.body.valps+'")) already exists.');
+	      				res.status(403).json({pseudonymInUse:true});
 	      				mongoose.disconnect();
 	      				return;
 	      			}else{
@@ -70,8 +88,9 @@ function insert_reg_mdb(req, res){
 	      			}
 	      		}
 
-	      		logger.info('new user ' + req.body.valn + '/' + req.body.vale + ' registered!');
+	      		logger.info('new user ' + req.body.valn + ' / ' + req.body.vale + ' registered!');
                 res.status(200).json({isRegistered:true});
+
 	      		mongoose.disconnect();
 	      	});
 		});
@@ -98,19 +117,18 @@ function login_mdb(req, res){
 	});
 	db.once('open', function callback() {
 		// import mongoose model
-    	var schemes = require('../utils/db_schemes.js');
-		var User = schemes.User;
+    	var User = require('../utils/dbschemes/user.js').User;
 
 		// defines what we're looking for
         // we're looking for an entry with the same email address/pseudo our user gave us
       	if(checkIfEmailInString(req.body.vale)) {
-      		var query = User.findOne({'eaddress': req.body.vale});
+      		var query = User.findOne({'eaddress': req.body.vale.toLowerCase()});
       	}else{
         	var query = User.findOne({'pseudo': req.body.vale});
       	}
 
       	// this defines what values of the stored user data we want to have
-      	query.select('wp _id');
+      	query.select('wp salt _id');
 
       	query.exec(function(err, result){
       		if(err){
@@ -122,13 +140,13 @@ function login_mdb(req, res){
       		logger.debug(result + '');
 
 		    if(result){
-		    	if(result.wp == req.body.valp){
+		    	if(result.wp == crypto.pbkdf2Sync(req.body.valp, result.salt, 10000, 512)){
 		    		logger.info("password is correct");
 		    		logger.info("user " + result._id + " logged in.");
                     res.status(200).json({isValid:true});
                     mongoose.disconnect();
 		    	}else{
-                	logger.warn("password is invalid");
+                	logger.warn("password is invalid.");
                     res.status(403).json({isValid:false});
                     mongoose.disconnect();
                 }

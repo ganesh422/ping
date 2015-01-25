@@ -55,7 +55,7 @@ app.controller("sign_up", function($scope, $http){
 			$scope.name_reg == undefined || 
 			$scope.wp_reg == undefined || 
 			$scope.wpr_reg == undefined){
-			printError("please fill all fields.")
+			printError('please fill all fields.')
 		}else if(!checkIfEmailInString /*method in misc.js*/($scope.email_reg)){
 			printError('the email address you entered is not valid.');
 			$("#emailinput_reg").focus();
@@ -93,8 +93,12 @@ app.controller("sign_up", function($scope, $http){
 
 			request.error(function(data){
 				console.log("REGISTRATION ERROR");
-				if(data.userAlreadyExists){
-					printError("USER ALREADY EXISTS");
+				if(data.emailandpseudoInUse){
+					printError("the email as well as the pseudonym you entered are both in use.");
+				}else if(data.emailInUse){
+					printError("email already in use.");
+				}else if(data.pseudonymInUse){
+					printError("pseudonym already in use");
 				}else if(data.errorHappened){
 					printError("ERROR AT REGISTRATION");
 				}
