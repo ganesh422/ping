@@ -39,7 +39,7 @@ function toLower(str){
 
 /* used to generate a random salt for each user */
 function generateSalt() {
-    return crypto.randomBytes(128).toString('base64');
+    return crypto.randomBytes(64).toString('base64');
 }
 
 
