@@ -8,8 +8,7 @@
 
 var mongoose = require('mongoose');
 var ObjectId = mongoose.Schema.Types.ObjectId;
-var sha1 = require('sha1');
-var logger = require('../logger');
+var crypto = require('crypto');
 
 /*
  * more information about the user relationships, etc.:
@@ -20,27 +19,13 @@ var logger = require('../logger');
  * http://mongoosejs.com/docs/api.html#model_Model.populate
  */
 
-var SAFE_COLS_TO_RETURN = function() {
-    return {
-        _id:1,
-        pseudo:1,
-        eaddress:1,
-        name: 1
-    };
-};
-
-/* password encryption sha1 */
-function hash(wp) {
-    return sha1(wp);
-}
-
-/* set encrypted password
+/* set pbkdf2 encrypted password
  * called before password is set
+ * http://nodejs.org/api/crypto.html#crypto_crypto_pbkdf2_password_salt_iterations_keylen_callback
+ * https://crackstation.net/hashing-security.htm
  */
 function setPassword(wp){
-    wp = hash(wp);
-    logger.debug('pw sha1 ' + wp);
-    return wp;
+    return crypto.pbkdf2Sync(wp , this.salt, 10000, 512);
 }
 
 /* used to make sure that an email address
@@ -52,6 +37,11 @@ function toLower(str){
     return str.toLowerCase();
 }
 
+/* used to generate a random salt for each user */
+function generateSalt() {
+    return crypto.randomBytes(128).toString('base64');
+}
+
 
 /* USER SCHEMA */
 var UserSchema = mongoose.Schema({
@@ -59,6 +49,7 @@ var UserSchema = mongoose.Schema({
     name: { type: String, required: true },
     pseudo: {type: String, trim: true },
     wp: { type: String, required: true, set: setPassword },
+    salt: { type: String, default: generateSalt },
     date_joined: { type: Date, default: Date.now },
     friends: [{ type: ObjectId, ref: 'User' }],
     subs: [ObjectId],
