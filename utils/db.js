@@ -7,7 +7,7 @@
  */
 
 var logger = require('../utils/logger');
-var sha1 = require('sha1');
+var crypto = require('crypto');
 
 /*
  * MongoDB
@@ -38,8 +38,8 @@ function insert_reg_mdb(req, res){
 	    // eventually start mongo shell with 'mongo'
     	mongoose.connect('mongodb://localhost/pingdb');
 		var db = mongoose.connection;
-		db.on('error', function(){
-			logger.error('connection error:');
+		db.on('error', function(err){
+			logger.error('connection error: ' + err.toString());
 			res.status(403).json({errorHappened:true});
 			return;
 		});
@@ -128,7 +128,7 @@ function login_mdb(req, res){
       	}
 
       	// this defines what values of the stored user data we want to have
-      	query.select('wp _id');
+      	query.select('wp salt _id');
 
       	query.exec(function(err, result){
       		if(err){
@@ -140,7 +140,7 @@ function login_mdb(req, res){
       		logger.debug(result + '');
 
 		    if(result){
-		    	if(result.wp == sha1(req.body.valp)){
+		    	if(result.wp == crypto.pbkdf2Sync(req.body.valp, result.salt, 10000, 512)){
 		    		logger.info("password is correct");
 		    		logger.info("user " + result._id + " logged in.");
                     res.status(200).json({isValid:true});
