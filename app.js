@@ -12,6 +12,7 @@ var logger = require("./utils/logger");
 // routes
 var routes = require('./routes/index');
 var people = require('./routes/people');
+var home = require('./routes/home');
 var users = require('./routes/users');
 var ajax = require('./routes/ajax');
 var images = require('./routes/images');
@@ -76,6 +77,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/people', people);
+app.use('/home', home);
 app.use('/users', users);
 app.use('/ajax', ajax);
 app.use('/images', images);
