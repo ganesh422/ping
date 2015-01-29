@@ -10,7 +10,7 @@ body{
   left: 50%;
   background-color: #ffffff;
   width: 350px;
-  height: 160px;
+  height: 180px;
   
 }
 
@@ -19,13 +19,21 @@ body{
   margin-top: 20px;
 }
 
+#checkbox_div{
+  margin-top: 10px;
+}
+
+#label_saveuname{
+  padding-right: 5px;
+}
+
 #regbutton_reg{
   margin-top: 20px;
   width: 200px;
 }
 
 #gotoreg_login{
-  margin-top: 10px;
+  margin-top: 0px;
   cursor: pointer;
 }
 

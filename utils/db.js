@@ -23,6 +23,9 @@ module.exports = {
 	},
 	db_login_mdb: function(req, res){
 		login_mdb(req, res);
+	},
+	db_pseudo_lookup_id: function(uid, res){
+		pseudo_lookup_id(uid, res);
 	}
 };
 
@@ -143,7 +146,7 @@ function login_mdb(req, res){
 		    	if(result.wp == crypto.pbkdf2Sync(req.body.valp, result.salt, 10000, 512)){
 		    		logger.info("password is correct");
 		    		logger.info("user " + result._id + " logged in.");
-                    res.status(200).json({isValid:true});
+                    res.status(200).json({isValid:true, valu: result._id});
                     mongoose.disconnect();
 		    	}else{
                 	logger.warn("password is invalid.");
@@ -157,6 +160,52 @@ function login_mdb(req, res){
 		    }
       	});
 	});
+}
+
+function pseudo_lookup_id(uid, res){
+	// connect to mongoDB database
+	// you need to have mongoDB installed to make this work
+	// tutorial:
+	// apt-get install mongodb
+	// or
+	// http://www.mongodb.org/downloads
+	// start mongo server with 'mongod -dbpath <PATH>'
+	// eventually start mongo shell with 'mongo'
+    mongoose.connect('mongodb://localhost/pingdb');
+	var db = mongoose.connection;
+	db.on('error', function(){
+		logger.error('connection error:');
+        res.status(403).json({errorHappened:true});
+	});
+	db.once('open', function callback() {
+		// import mongoose model
+    	var User = require('../utils/dbschemes/user.js').User;
+
+		// defines what we're looking for
+        var query = User.findOne({'_id': uid});
+
+      	// this defines what values of the stored user data we want to have
+      	query.select('pseudo');
+
+      	query.exec(function(err, result){
+      		if(err){
+		        logger.error(err);
+                mongoose.disconnect();
+                res.status(403).json({errorHappened:true});
+                return;
+      		}
+            logger.debug(result + '');
+
+            if(result){
+                mongoose.disconnect();
+                res.status(200).json({pseudoforid:result.pseudo});
+            }else{
+                logger.warn("query for user with id " + uid + " returned no result.");
+                mongoose.disconnect();
+                res.status(403).json({userNotFound:true});
+            }
+      	});
+    });
 }
 
 /*

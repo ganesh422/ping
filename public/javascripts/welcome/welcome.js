@@ -9,7 +9,7 @@ var app = angular.module("welcome", []);
 // login controller
 app.controller("sign_in", function($scope, $http){
     $scope.login = function(){
-    	if($scope.emailpseudo_login == undefined || $scope.wp_login == undefined){
+    	if($("#emailpseudoinput_login").val() /*has to be jQuery*/ == undefined || $scope.wp_login == undefined){
     		printError("please fill all fields.");
     	}else if($scope.wp_login.length < 6){
     		printError("password is invalid.");
@@ -18,7 +18,7 @@ app.controller("sign_in", function($scope, $http){
     			method: "post",
     			url: "/people/login",
 			    data: {
-			        vale: $scope.emailpseudo_login,
+			        vale: $("#emailpseudoinput_login").val() /*has to be jQuery, so that the username from pseudolookup_input gets recognised as text*/,
 			        valp: $scope.wp_login
 			    }
 		    });
@@ -26,14 +26,23 @@ app.controller("sign_in", function($scope, $http){
 		    /* Check whether the HTTP Request is successful or not. */
 			request.success(function(data){
 			    if(data.isValid){
-					printError("SUCCESS!!!");
+			    	if($("#checkbox_saveuname").is(":checked")){
+			    		// store username data as permanent cookie
+						window.localStorage.removeItem("ping_uid");
+						window.localStorage.setItem("ping_uid", data.valu);
+			    	}else{
+			    		// store username data as session lifetime cookie
+						window.localStorage.removeItem("ping_uid");
+			    		window.sessionStorage.setItem("ping_uid", data.valu);
+			    	}
+					window.location = "/home";
 				}
 			});
 
 			request.error(function(data){
 				console.log("LOGIN ERROR");
 				if(data.userNotFound){
-					printError("there is no user with this email/pseudonym.")
+					printError("there is no user with this email/pseudonym.");
 					goto_reg();
 				}else if(!data.isValid){
 					$("#pwinput_login").val("");
@@ -51,7 +60,7 @@ app.controller("sign_in", function($scope, $http){
 // registration controller
 app.controller("sign_up", function($scope, $http){
 	$scope.register = function(){
-		if($scope.email_reg == undefined || 
+		if($scope.email_reg == undefined ||
 			$scope.name_reg == undefined || 
 			$scope.wp_reg == undefined || 
 			$scope.wpr_reg == undefined){
@@ -107,7 +116,28 @@ app.controller("sign_up", function($scope, $http){
 	}
 });
 
-
+function pseudolookup_insert_uname(uid){
+	$.ajax({
+		type: "post",
+		url: "/people/pseudolookup",
+		data: { valuid: uid },
+		success: function(data){
+			if(data.pseudoforid != undefined){
+				// set pseudonym in login field
+				$("#emailpseudoinput_login").val(data.pseudoforid);
+				$("#pwinput_login").focus();
+			}else{
+				$("#emailpseudoinput_login").val("");
+			}
+		},error: function(data){
+			if(data.errorHappened){
+				printError("there was an internal server error.");
+			}else if(data.userNotFound){
+				console.log("there was no user with that id.");
+			}
+		}
+	});
+}
 
 
 

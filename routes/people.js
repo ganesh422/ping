@@ -20,6 +20,12 @@ router.post('/login', function(req, res){
     db.db_login_mdb(req, res);
 });
 
+/* pseudonym lookup via ID */
+router.post('/pseudolookup', function(req, res){
+    logger.info('POST request pseudonym lookup via ID ' + req.body.valuid + ' for /people/pseudolookup');
+    db.db_pseudo_lookup_id(req.body.valuid, res);
+});
+
 /* GET home page. */
 router.get('/', function(req, res) {
     res.render('index.jade', {title: 'ping People'});

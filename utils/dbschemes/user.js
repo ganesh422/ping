@@ -17,15 +17,22 @@ var crypto = require('crypto');
  * http://stackoverflow.com/questions/26008555/foreign-key-mongoose
  * http://stackoverflow.com/questions/17244825/mongoose-linking-objects-to-each-other-without-duplicating
  * http://mongoosejs.com/docs/api.html#model_Model.populate
+ * http://mongoosejs.com/docs/api.html#types_array_MongooseArray-pull
  */
 
 /* set pbkdf2 encrypted password
  * called before password is set
  * http://nodejs.org/api/crypto.html#crypto_crypto_pbkdf2_password_salt_iterations_keylen_callback
  * https://crackstation.net/hashing-security.htm
+ * for dart: https://pub.dartlang.org/packages/cipher
  */
 function setPassword(wp){
     return crypto.pbkdf2Sync(wp , this.salt, 10000, 512);
+}
+
+/* used to generate a random salt for each user */
+function generateSalt() {
+    return crypto.randomBytes(64).toString('base64');
 }
 
 /* used to make sure that an email address
@@ -37,12 +44,6 @@ function toLower(str){
     return str.toLowerCase();
 }
 
-/* used to generate a random salt for each user */
-function generateSalt() {
-    return crypto.randomBytes(64).toString('base64');
-}
-
-
 /* USER SCHEMA */
 var UserSchema = mongoose.Schema({
     eaddress: { type: String, required: true, set: toLower, trim: true },
@@ -52,8 +53,7 @@ var UserSchema = mongoose.Schema({
     salt: { type: String, default: generateSalt },
     date_joined: { type: Date, default: Date.now },
     friends: [{ type: ObjectId, ref: 'User' }],
-    subs: [ObjectId],
-    posts: [ObjectId]
+    subs: [ObjectId]
 },{ strict: true });
 
 // create model of user schema

@@ -3,15 +3,13 @@ html
     meta(charset='utf8')
     //color for chrome
     meta(name="theme-color" content="#3F51B5")
-    title
+    title Welcome to Ping!
     //link(rel="shortcut icon" type="image/x-icon" href="favicon.ico")
     link(rel='stylesheet', href='/components/bootstrap/bootstrap_paper.css')
     link(rel='stylesheet', href='/stylesheets/welcome.css')
     script(src='/components/angular/angular.js')
     script(src='/components/jquery/jquery.js')
     script(src='/components/jquery/jquery-ui/jquery-ui.js')
-    script(src='http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/sha256.js')
-    //script(src='/components/cryptojs/rollups/pbkdf2.js') offline use only
 
     // private javascript files
     script(src='/javascripts/ajax.js')
@@ -35,6 +33,10 @@ html
                 input#pwinput_login.login.input(type="password" placeholder="password" ng-model="wp_login")
                 br
                 input#loginbutton_login.login(type="button" value="Log in" ng-click="login()")
+                br
+                #checkbox_div.login
+                    label#label_saveuname save username
+                    input#checkbox_saveuname.login(type="checkbox", name="sld", value="savelogindata")
                 p#gotoreg_login.login You don&apos;t have an account yet? Register here
             #registerpanel.registerpanel(ng-controller="sign_up")
                 input#emailinput_reg.reg.input(type="text" placeholder="email" ng-model="email_reg")

@@ -1,0 +1,35 @@
+html
+  head
+    meta(charset='utf8')
+    //color for chrome
+    meta(name="theme-color" content="#3F51B5")
+    title Ping
+    //link(rel="shortcut icon" type="image/x-icon" href="favicon.ico")
+    link(rel='stylesheet', href='/components/bootstrap/bootstrap_paper.css')
+    link(rel='stylesheet', href='/stylesheets/home.css')
+    script(src='/components/angular/angular.js')
+    script(src='/components/jquery/jquery.js')
+    script(src='/components/jquery/jquery-ui/jquery-ui.js')
+
+    // private javascript files
+    script(src='/javascripts/ajax.js')
+    script(src='/javascripts/bg.js')
+    script(src='/javascripts/startscript.js')
+    script(src='/javascripts/misc.js')
+    script(src='/javascripts/info.js')
+
+    script.
+        $(document).ready(function() {
+            if(window.localStorage.getItem("ping_uid") != undefined){
+                console.log(window.localStorage.getItem("ping_uid"));
+            }else{
+                console.log(window.sessionStorage.getItem("ping_uid"));
+            }
+        });       
+
+  body
+    center
+        .header
+            .header-content
+                img#logo(src='/images/ping_logo.png')
+                p#newpost(onclick="newpost") create new post

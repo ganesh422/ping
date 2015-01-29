@@ -1,0 +1,30 @@
+body{
+    margin:0px;
+    background:#fff;
+}
+.header {
+    width:100%;
+    position:fixed;
+    top:0px;
+    height:50px;
+    background:#ffffff;
+    box-shadow: 3px 3px 5px #888888;
+}
+
+.header-content{
+    margin: 10px;
+    
+}
+
+#logo{
+    width: 7%;
+    height: 7%px;
+    float:left;
+}
+
+#newpost{
+    cursor: pointer;
+    margin-top: 4px;
+    float:left;
+    margin-left: 5%;
+}
