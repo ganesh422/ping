@@ -28,11 +28,19 @@ app.controller("sign_in", function($scope, $http){
 			    if(data.isValid){
 			    	if($("#checkbox_saveuname").is(":checked")){
 			    		// store username data as permanent cookie
-						window.localStorage.removeItem("ping_uid");
+			    		if(window.localStorage.getItem("ping_uid") != undefined ||
+			    		 window.localStorage.getItem("ping_uid") != undefined){
+							window.localStorage.removeItem("ping_uid");
+							window.sessionStorage.removeItem("ping_uid");
+						}
 						window.localStorage.setItem("ping_uid", data.valu);
 			    	}else{
 			    		// store username data as session lifetime cookie
-						window.localStorage.removeItem("ping_uid");
+						if(window.localStorage.getItem("ping_uid") != undefined ||
+			    		 window.localStorage.getItem("ping_uid") != undefined){
+							window.localStorage.removeItem("ping_uid");
+							window.sessionStorage.removeItem("ping_uid");
+						}
 			    		window.sessionStorage.setItem("ping_uid", data.valu);
 			    	}
 					window.location = "/home";
@@ -97,6 +105,12 @@ app.controller("sign_up", function($scope, $http){
 			request.success(function(data){
 				if(data.isRegistered){
 					window.location = "/";
+					
+					// remove current entries from browser storage
+					if(window.localStorage.getItem("ping_uid") != undefined || window.localStorage.getItem("ping_uid") != undefined){
+						window.localStorage.removeItem("ping_uid");
+						window.sessionStorage.removeItem("ping_uid");
+					}
 				}
 			});
 
@@ -126,6 +140,9 @@ function pseudolookup_insert_uname(uid){
 				// set pseudonym in login field
 				$("#emailpseudoinput_login").val(data.pseudoforid);
 				$("#pwinput_login").focus();
+				if(window.localStorage.getItem("ping_uid") != undefined){
+					$("#checkbox_saveuname").prop("checked", true);
+				}
 			}else{
 				$("#emailpseudoinput_login").val("");
 			}
@@ -139,7 +156,30 @@ function pseudolookup_insert_uname(uid){
 	});
 }
 
+// launching welcome page
+// -random background
+// -animate the background
+// -set click and keypress listeners
+// -hide register panel
+// -get username/uid from local/session storage
+function welcome_start(){
+	randomizeBackground();
+	animateBackground();
+	set_welcome_click_listeners();
+	set_welcome_keypress_listeners();
+	$("#registerpanel").hide();
+	$("#emailpseudoinput_login").focus();
 
+  	// if there is a uid stored in the browser
+  	// get it, send it to the server and fetch the user pseudonym
+	if(window.sessionStorage.getItem("ping_uid") != undefined){
+		pseudolookup_insert_uname(window.sessionStorage.getItem("ping_uid"));
+	}else if(window.localStorage.getItem("ping_uid") != undefined){
+		pseudolookup_insert_uname(window.localStorage.getItem("ping_uid"));
+	}else{
+		console.log("no uid and no username found.");
+	}
+}
 
 // all click listeners for the welcome page
 // for the "links" to change the forms between login and register
@@ -154,7 +194,12 @@ function set_welcome_click_listeners(){
 	});
 }
 
+// used to store the username 
+// when switching back from registration to login
+var temp_uname; 
+
 function goto_reg(){
+	temp_uname = $("#emailpseudoinput_login").val();
 	$(":input").val("");
 	$("#regbutton_reg").val("Create my account");
 	$(".registerpanel").addClass("active");
@@ -166,6 +211,7 @@ function goto_reg(){
 
 function goto_login(){
 	$(":input").val("");
+	$("#emailpseudoinput_login").val(temp_uname);
 	$("#loginbutton_login").val("Log in");
 	$(".loginpanel").addClass("active");
 	$(".registerpanel").removeClass("active");
