@@ -1,42 +1,26 @@
-function randomizeBackground(){
+function anim(){
 
   /*
    * TO DO
    * use images hosted on server instead (probably done)
    */
-
-
-  /*background image randomizer*/
-  switch(Math.floor((Math.random() * 3) + 1)){
-    case 1:
-      $('body').css('background', '#000 url("/images/austria_sg.jpg")');
-      console.log('got background austria_sg.jpg from server on /images'); //debugging
-      //$('#errorDiv').css('color', 'white');
-      break;
-    case 2:
-      $('body').css('background', '#000 url("/images/greece_olivetree.jpg")');
-      console.log('got background greece_olivetree.jpg from server on /images');
-      //$('#errorDiv').css('color', 'white');
-      break;
-    case 3:
-      $('body').css('background', '#000 url("/images/greece_olivetree_closeup.jpg")');
-      console.log('got background greece_olivetree_closeup.jpg from server on /images');
-      //$('#errorDiv').css('color', 'black');
-      break;
-    default:
-      $('body').css('background', '#000 url("/images/austria_sg.jpg")');
-      console.log('got background austria_sg.jpg from server on /images');
-      //$('#errorDiv').css('color', 'black');
-      break;
-  }
+  $("#bgcontainer img.bgfade").first().appendTo('#bgcontainer').fadeOut(1500);
+  $("#bgcontainer img").first().fadeIn(1500);
+  setTimeout(anim, 5000);
 }
 
 function animateBackground(){
-  $(function(){
+  /*$(function(){
     var x = 0;
     setInterval(function(){
       x-=1;
-      $('body').css('background-position', x + 'px 0');
-    }, 80 /*speed; higher is slower*/);
+      $('#bgcontainer img').css('position', x + 'px 0');
+    }, 70 /*speed; higher is slower);
   })
+
+  $( "#bgcontainer img" ).animate({
+    opacity: 0.25,
+    left: "+=70",
+  }, 5000, function() {
+  });*/
 }

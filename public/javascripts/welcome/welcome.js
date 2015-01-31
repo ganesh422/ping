@@ -157,14 +157,15 @@ function pseudolookup_insert_uname(uid){
 }
 
 // launching welcome page
-// -random background
 // -animate the background
 // -set click and keypress listeners
 // -hide register panel
 // -get username/uid from local/session storage
 function welcome_start(){
-	randomizeBackground();
-	animateBackground();
+	$('#bgcontainer img.bgfade').hide();
+    $('#bgcontainer').css({'height':'100%','width':'100%'});
+	anim();
+	$(window).resize(function(){window.location.href=window.location.href})
 	set_welcome_click_listeners();
 	set_welcome_keypress_listeners();
 	$("#registerpanel").hide();
