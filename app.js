@@ -8,6 +8,9 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var fs = require('fs');
 var logger = require('./utils/logger');
+var sys = require('sys');
+var domain = require('domain');
+var cluster = require('cluster');
 
 // routes
 var routes = require('./routes/index');
@@ -16,7 +19,6 @@ var home = require('./routes/home');
 var users = require('./routes/users');
 var ajax = require('./routes/ajax');
 var images = require('./routes/images');
-var sys = require('sys');
 
 // allow input in console
 // react to input in console
@@ -40,13 +42,13 @@ stdin.addListener("data", function(d) {
             http_server.close();
             logger.warn('shutting down https server.'.red.bold);
             https_server.close();
-            startServers();
+            start();
         case 'res':
             logger.warn('shutting down http server.'.red.bold);
             http_server.close();
             logger.warn('shutting down https server.'.red.bold);
             https_server.close();
-            startServers();
+            start();
     }
 });
 
@@ -142,22 +144,42 @@ app.use(function(err, req, res, next) {
     });
 });
 
-function startServers(){
-    try {
-        http_server = http.createServer(app).listen(http_port);
-        logger.info(('HTTP Server started on port ' + http_port).magenta.bold);
-    }catch(ex){
-        logger.error("COULDN'T START HTTP SERVER!");
-        logger.error(ex);
+function start(){
+    var workers = process.env.WORKERS || require('os').cpus().length;
+
+    if (cluster.isMaster) {
+
+    logger.info('start cluster with %s workers', workers);
+
+    for (var i = 0; i < workers; ++i) {
+        var worker = cluster.fork().process;
+        logger.info('worker %s started.', worker.pid);
     }
 
-    try {
-        https_server = https.createServer(options, app).listen(https_port);
-        logger.info(('HTTPS Server started on port ' + https_port).magenta.bold);
-    }catch(ex){
-        logger.error("COULDN'T START HTTPS SERVER!");
-        logger.error(ex);
+    cluster.on('exit', function(worker) {
+        logger.warn('worker %s died. restart...', worker.process.pid);
+        cluster.fork();
+    });
+
+    } else {
+        var d = domain.create();
+        d.on('error', function(er) {
+            logger.error('error at starting http/https server'.red.bold, er.stack);
+            throw new Error('error at starting http/https server');
+        });
+        d.run(function(){
+            http_server = http.createServer(app).listen(http_port);
+            logger.info(('HTTP Server started on port ' + http_port).magenta.bold);
+            https_server = https.createServer(options, app).listen(https_port);
+            logger.info(('HTTPS Server started on port ' + https_port).magenta.bold);
+        });
     }
+
+    process.on('uncaughtException', function (err) {
+        logger.error((new Date).toUTCString() + ' uncaughtException:', err.message)
+        logger.error(err.stack)
+        process.exit(1)
+    });
 }
 
-startServers();
+start();
