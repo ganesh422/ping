@@ -104,7 +104,7 @@ function insert_reg_mdb(req, res){
 	      				logger.error(err.toString().red);
 	      			}
 	      		}
-	      		logger.info('new user ' + req.body.valn.white.bold + ' / ' + req.body.vale.white + ' registered! (' + get_ip(req).clientIp.toString() + ')');
+	      		logger.info('new user ' + req.body.valn.white.bold + ' / ' + req.body.vale.white + ' registered! (' + get_ip(req).clientIp.toString().white.bold + ')');
                 
 
 	      		mongoose.disconnect();
@@ -175,7 +175,7 @@ function login_mdb(req, res){
 		    				logger.error(err.toString().red);
 		    			}
 		    		}
-		    		logger.info("user " + req.body.vale.white.bold + " logged in. (" + get_ip(req).clientIp.toString().rainbow.bold + ")");
+		    		logger.info("user " + req.body.vale.white.bold + " logged in. (" + get_ip(req).clientIp.toString().white.bold + ")");
                     mongoose.disconnect();
 		    	}else{
 		    		try{
@@ -219,13 +219,13 @@ function pseudo_lookup_id(uid, res){
 	db.on('error', function(err){
 		try{
 			res.status(403).json({errorHappened:true});
+			logger.error(err.toString().cyan.italic + '. Is ' + ' mongod '.red.bold + ' running?');
 		}catch(err){
 			logger.error('db.js could not send response errorHappened:true to '.red.bold + uid.bgWhite.black.bold);
 			if(err != undefined){
 		    	logger.error(err.toString().red);
 		    }
 		}
-		logger.error(err.toString().cyan.italic + '. Is ' + ' mongod '.red.bold + ' running?');
 	});
 	db.once('open', function callback() {
 		// import mongoose model

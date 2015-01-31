@@ -6,7 +6,7 @@ var get_ip = require('ipware')().get_ip;
 /* GET home page. */
 router.get('/', function(req, res) {
 	var ip_info = get_ip(req).clientIp;
-  	logger.info(ip_info.toString().rainbow.bold + ': ' + 'GET'.yellow.bold + ' request for ' + '/'.blue.bold);
+  	logger.info(ip_info.toString().white.bold + ': ' + 'GET'.yellow.bold + ' request for ' + '/'.blue.bold);
   	res.render('index.jade', {"title": "ping"});
 });
 
