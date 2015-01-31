@@ -57,6 +57,14 @@ body{
   height: 180px;
 }
 
+.login.input{
+  width: 200px;
+}
+
+.reg.input{
+  width: 200px;
+}
+
 #loginbutton_login{
   width:100px;
   margin-top: 20px;
