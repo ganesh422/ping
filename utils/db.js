@@ -8,6 +8,8 @@
 
 var logger = require('../utils/logger');
 var crypto = require('crypto');
+var get_ip = require('ipware')().get_ip;
+var colors = require('colors');
 
 /*
  * MongoDB
@@ -33,7 +35,6 @@ function insert_reg_mdb(req, res){
     try{
     	// connect to mongoDB database
 	    // you need to have mongoDB installed to make this work
-	    // tutorial:
 	    // apt-get install mongodb
 	    // or
 	    // http://www.mongodb.org/downloads
@@ -42,9 +43,15 @@ function insert_reg_mdb(req, res){
     	mongoose.connect('mongodb://localhost/pingdb');
 		var db = mongoose.connection;
 		db.on('error', function(err){
-			logger.error('connection error: ' + err.toString());
-			res.status(403).json({errorHappened:true});
-			return;
+			try{
+				res.status(403).json({errorHappened:true});
+			}catch(err){
+				logger.error('db.js could not send response errorHappened:true'.red.bold);
+				if(err != undefined){
+	      			logger.error(err.toString().red);
+	      		}
+			}
+			logger.error(err.toString().cyan.italic + '. Is ' + ' mongod '.red.bold + ' running?');
 		});
 		db.once('open', function callback() {
 		    logger.debug('connected to mongodb.');
@@ -90,9 +97,15 @@ function insert_reg_mdb(req, res){
 		      			return;
 	      			}
 	      		}
-
-	      		logger.info('new user ' + req.body.valn + ' / ' + req.body.vale + ' registered!');
-                res.status(200).json({isRegistered:true});
+	      		try{
+	      			res.status(200).json({isRegistered:true});
+	      		}catch(err){
+	      			if(err != undefined){
+	      				logger.error(err.toString().red);
+	      			}
+	      		}
+	      		logger.info('new user ' + req.body.valn.white.bold + ' / ' + req.body.vale.white + ' registered! (' + get_ip(req).clientIp.toString() + ')');
+                
 
 	      		mongoose.disconnect();
 	      	});
@@ -105,7 +118,6 @@ function insert_reg_mdb(req, res){
 function login_mdb(req, res){
 	// connect to mongoDB database
 	// you need to have mongoDB installed to make this work
-	// tutorial:
 	// apt-get install mongodb
 	// or
 	// http://www.mongodb.org/downloads
@@ -113,10 +125,16 @@ function login_mdb(req, res){
 	// eventually start mongo shell with 'mongo'
     mongoose.connect('mongodb://localhost/pingdb');
 	var db = mongoose.connection;
-	db.on('error', function(){
-		logger.error('connection error:');
-		res.status(403).json({errorHappened:true});
-		return;
+	db.on('error', function(err){
+		try{
+			res.status(403).json({errorHappened:true});
+		}catch(err){
+			logger.error('db.js could not send response errorHappened:true'.red.bold);
+			if(err != undefined){
+		    	logger.error(err.toString().red);
+		    }
+		}
+		logger.error(err.toString().cyan.italic + '. Is ' + ' mongod '.red.bold + ' running?');
 	});
 	db.once('open', function callback() {
 		// import mongoose model
@@ -135,27 +153,52 @@ function login_mdb(req, res){
 
       	query.exec(function(err, result){
       		if(err){
-		        logger.error(err);
-		        res.status(403).json({errorHappened:true});
-		        return;
+      			try{
+					res.status(403).json({errorHappened:true});
+				}catch(err){
+					logger.error('db.js could not send response errorHappened:true'.red.bold);
+					if(err != undefined){
+				    	logger.error(err.toString().red);
+				    }
+				}
       		}
 
-      		logger.debug(result + '');
+      		//logger.debug(result + '');
 
 		    if(result){
 		    	if(result.wp == crypto.pbkdf2Sync(req.body.valp, result.salt, 10000, 512)){
-		    		logger.info("password is correct");
-		    		logger.info("user " + result._id + " logged in.");
-                    res.status(200).json({isValid:true, valu: result._id});
+		    		try{
+		    			res.status(200).json({isValid:true, valu: result._id});
+		    		}catch(err){
+		    			logger.error('db.js could not send response isValid:true to '.red.bold + req.body.vale.white.bold);
+		    			if(err != undefined){
+		    				logger.error(err.toString().red);
+		    			}
+		    		}
+		    		logger.info("user " + req.body.vale.white.bold + " logged in. (" + get_ip(req).clientIp.toString().rainbow.bold + ")");
                     mongoose.disconnect();
 		    	}else{
-                	logger.warn("password is invalid.");
-                    res.status(403).json({isValid:false});
+		    		try{
+		    			res.status(403).json({isValid:false});
+		    		}catch(err){
+		    			logger.error('db.js could not send response isValid:true to '.red.bold + req.body.vale.white.bold);
+		    			if(err != undefined){
+					    	logger.error(err.toString().red);
+					    }
+		    		}
+                	logger.warn("user " + req.body.vale.white.bold + " entered invalid password.");
                     mongoose.disconnect();
                 }
 		    }else{
-		    	logger.warn("query for user " + req.body.vale + " returned no result.")
-                res.status(403).json({userNotFound:true});
+		    	try{
+		    		res.status(403).json({userNotFound:true});
+		    	}catch(err){
+		    		logger.error('db.js could not send response userNotFound:true to '.red.bold + req.body.vale.white.bold);
+		    		if(err != undefined){
+		    			logger.error(err.toString().red);
+		    		}
+		    	}
+		    	logger.warn("query for user " + req.body.vale.white.bold + " returned no result.")
                 mongoose.disconnect();
 		    }
       	});
@@ -173,9 +216,16 @@ function pseudo_lookup_id(uid, res){
 	// eventually start mongo shell with 'mongo'
     mongoose.connect('mongodb://localhost/pingdb');
 	var db = mongoose.connection;
-	db.on('error', function(){
-		logger.error('connection error:');
-        res.status(403).json({errorHappened:true});
+	db.on('error', function(err){
+		try{
+			res.status(403).json({errorHappened:true});
+		}catch(err){
+			logger.error('db.js could not send response errorHappened:true to '.red.bold + uid.bgWhite.black.bold);
+			if(err != undefined){
+		    	logger.error(err.toString().red);
+		    }
+		}
+		logger.error(err.toString().cyan.italic + '. Is ' + ' mongod '.red.bold + ' running?');
 	});
 	db.once('open', function callback() {
 		// import mongoose model
@@ -189,20 +239,39 @@ function pseudo_lookup_id(uid, res){
 
       	query.exec(function(err, result){
       		if(err){
-		        logger.error(err);
+      			try{
+					res.status(403).json({errorHappened:true});
+				}catch(err){
+					logger.error('db.js could not send response errorHappened:true'.red.bold);
+					if(err != undefined){
+		    			logger.error(err.toString().red);
+		    		}
+				}
                 mongoose.disconnect();
-                res.status(403).json({errorHappened:true});
-                return;
       		}
             logger.debug(result + '');
 
             if(result){
+            	try{
+            		res.status(200).json({pseudoforid:result.pseudo});
+            	}catch(err){
+            		logger.error('db.js could not send response pseudoforid'.red.bold);
+            		if(err != undefined){
+				    	logger.error(err.toString().red);
+				    }
+            	}
                 mongoose.disconnect();
-                res.status(200).json({pseudoforid:result.pseudo});
             }else{
+            	try{
+            		res.status(403).json({userNotFound:true});
+            	}catch(err){
+            		logger.error('db.js could not send response userNotFound'.red.bold);
+            		if(err != undefined){
+				    	logger.error(err.toString().red);
+				    }
+            	}
                 logger.warn("query for user with id " + uid + " returned no result.");
                 mongoose.disconnect();
-                res.status(403).json({userNotFound:true});
             }
       	});
     });
