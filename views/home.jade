@@ -11,10 +11,10 @@ html
     script(src='/components/jquery/jquery.js')
     script(src='/components/jquery/jquery-ui/jquery-ui.js')
 
-    // private javascript files
+    // javascript files
     script(src='/javascripts/ajax.js')
     script(src='/javascripts/bg.js')
-    script(src='/javascripts/startscript.js')
+    script(src='/javascripts/start.js')
     script(src='/javascripts/misc.js')
     script(src='/javascripts/info.js')
 
@@ -25,11 +25,14 @@ html
             }else{
                 console.log(window.sessionStorage.getItem("ping_uid"));
             }
+            
+            https_redirect();
         });       
 
   body
+    .header
+        .header-content
+            img#logo(src='/images/ping_logo.png')
+            p#newpost(onclick="newpost") create new post
     center
-        .header
-            .header-content
-                img#logo(src='/images/ping_logo.png')
-                p#newpost(onclick="newpost") create new post
+        
