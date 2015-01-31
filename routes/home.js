@@ -11,7 +11,7 @@ var get_ip = require('ipware')().get_ip;
 router.get('/', function(req, res) {
     res.render('home.jade', {title: 'ping'});
     var ip_info = get_ip(req).clientIp;
-  	logger.info(ip_info.toString().rainbow.bold + ': ' + 'GET'.yellow.bold + ' request for ' + '/home'.blue.bold);
+  	logger.info(ip_info.toString().white.bold + ': ' + 'GET'.yellow.bold + ' request for ' + '/home'.blue.bold);
 });
 
 module.exports = router;
