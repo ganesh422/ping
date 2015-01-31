@@ -7,7 +7,7 @@ var favicon = require('serve-favicon');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var fs = require('fs');
-var logger = require("./utils/logger");
+var logger = require('./utils/logger');
 
 // routes
 var routes = require('./routes/index');
@@ -29,15 +29,33 @@ stdin.addListener("data", function(d) {
         case 'exit':
             process.exit();
             break;
+        case 'close':
+            process.exit();
+            break;
         case 'clear':
             process.stdout.write('\033c');
             break;
+        case 'restart':
+            logger.warn('shutting down http server.'.red.bold);
+            http_server.close();
+            logger.warn('shutting down https server.'.red.bold);
+            https_server.close();
+            startServers();
+        case 'res':
+            logger.warn('shutting down http server.'.red.bold);
+            http_server.close();
+            logger.warn('shutting down https server.'.red.bold);
+            https_server.close();
+            startServers();
     }
 });
 
 /* ==================================================================================
  *                                  VARIABLES
  */
+
+var http_server;
+var https_server;
 
 // port variables
 var http_port = process.env.port || 1337;
@@ -124,19 +142,22 @@ app.use(function(err, req, res, next) {
     });
 });
 
+function startServers(){
+    try {
+        http_server = http.createServer(app).listen(http_port);
+        logger.info(('HTTP Server started on port ' + http_port).magenta.bold);
+    }catch(ex){
+        logger.error("COULDN'T START HTTP SERVER!");
+        logger.error(ex);
+    }
 
-try {
-    http.createServer(app).listen(http_port);
-    logger.info('HTTP Server listening on ' + http_port + '...');
-}catch(ex){
-    logger.error("COULDN'T START HTTP SERVER!");
-    logger.error(ex);
+    try {
+        https_server = https.createServer(options, app).listen(https_port);
+        logger.info(('HTTPS Server started on port ' + https_port).magenta.bold);
+    }catch(ex){
+        logger.error("COULDN'T START HTTPS SERVER!");
+        logger.error(ex);
+    }
 }
 
-try {
-    https.createServer(options, app).listen(https_port);
-    logger.info('HTTPS Server listening on ' + https_port + '...');
-}catch(ex){
-    logger.error("COULDN'T START HTTPS SERVER!");
-    logger.error(ex);
-}
+startServers();
