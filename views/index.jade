@@ -4,28 +4,31 @@ html
     //color for chrome
     meta(name="theme-color" content="#3F51B5")
     title Welcome to Ping!
-    //link(rel="shortcut icon" type="image/x-icon" href="favicon.ico")
     link(rel='stylesheet', href='/components/bootstrap/bootstrap_paper.css')
     link(rel='stylesheet', href='/stylesheets/welcome.css')
     script(src='/components/angular/angular.js')
     script(src='/components/jquery/jquery.js')
     script(src='/components/jquery/jquery-ui/jquery-ui.js')
 
-    // private javascript files
+    // javascript files
     script(src='/javascripts/ajax.js')
     script(src='/javascripts/bg.js')
-    script(src='/javascripts/startscript.js')
+    script(src='/javascripts/start.js')
     script(src='/javascripts/misc.js')
     script(src='/javascripts/info.js')
     script(src='/javascripts/welcome/welcome.js')
 
     script.
         $(document).ready(function() {
-            // function in startscript.js
+            https_redirect();
             start_welcome();
         });       
 
   body
+    #bgcontainer
+        img.bgfade(src="/images/austria_sg.jpg")
+        img.bgfade(src="/images/greece_olivetree.jpg")
+        img.bgfade(src="/images/greece_olivetree_closeup.jpg")
     center
         #container(ng-app="welcome")
             #loginpanel.loginpanel.active(ng-controller="sign_in")
@@ -48,3 +51,6 @@ html
                 br
                 input#regbutton_reg.reg(type="button" value="Create my account" ng-click="register()")
                 p#gotologin_reg You already have an account? Log in here
+    #footer
+        img(src="/images/ping_logo.png")
+        p#errors
