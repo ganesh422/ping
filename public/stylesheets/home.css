@@ -1,7 +1,9 @@
 body{
     margin:0px;
-    background:#fff;
+    background:#d3d3d3;
 }
+
+/* TOP HEADER */
 .header {
     width:100%;
     position:fixed;
@@ -16,15 +18,93 @@ body{
     
 }
 
+#container{
+    padding-top: 5px;
+}
+
+#errors{
+    font-weight: bold;
+    float: right;
+}
+
 #logo{
-    width: 82px;
+    width: 90px;
     height: 35px;
     float:left;
 }
 
 #newpost{
     cursor: pointer;
-    margin-top: 4px;
     float:left;
-    margin-left: 5%;
+    margin-left: 15px;
+
+    /*make the text unselectable for the user*/
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
+
+#newsub{
+    cursor: pointer;
+    float:left;
+    margin-left: 10px;
+
+    /*make the text unselectable for the user*/
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+/* TOP HEADER END */
+
+/* CONTENT */
+#newpostpanel{
+    background-color: #fff;
+    height: 170px;
+    width: 400px;
+    margin-top: 200px;
+    padding: 10px;
+    display: inline-block;
+}
+
+#textinput{
+    width: 380px;
+    height: 100px;
+    max-width: 380px;
+    max-height: 100px;
+}
+
+#postpanelbottom{
+    margin-top: 19px;
+}
+
+#subselect{
+    margin-right: 10px;
+    width: 150px;
+}
+
+#newsubpanel{
+    background-color: #fff;
+    height: 100px;
+    width: 400px;
+    margin-top: 200px;
+    padding: 10px;
+    display: inline-block;
+}
+
+#subnameinput{
+    margin-top: 10px;
+    width: 300px;
+}
+
+#submitsubbutton{
+    margin-top: 12px;
+}
+
+#content{
+    display: inline-block;
+}
+/* CONTENT END */

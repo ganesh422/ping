@@ -18,5 +18,5 @@ function start_welcome(){
 }
 
 function start_home(){
-
+	
 }

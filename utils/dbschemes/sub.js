@@ -2,15 +2,28 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = ObjectId = Schema.ObjectId;
 var crypto = require('crypto');
-var Post = require('post.js').Post;
-var User = require('user.js').User;
+var Post = require('../dbschemes/post.js').Post;
+var User = require('../dbschemes/user.js').User;
 
 /* COMMUNITY */
 var subSchema = Schema({
 	name: { type: String, required: true, unique: true },
+	admins: [{ type:String, required: true }],
 	date_creation: { type: Date, default: Date.now },
-	posts [{ type: ObjectId, ref: 'Post' }]
 });
 
-module.exports.Sub = mongoose.model('Sub', subSchema);
+Sub = mongoose.model('Sub', subSchema);
+
+// make sure pseudonym is unique (unique keyword above doesn't work)
+Sub.schema.path('name').validate(function (value, respond) {                                                                                           
+    Sub.findOne({ name: value }, function (err, sub) {                                                                                                
+        if(sub){
+            respond(false);
+        }else{
+            respond(true);
+        }                                                                                                                       
+    });                                                                                                                                                  
+}, 'This sub name already exists.');
+
+module.exports.Sub = Sub;
 module.exports.SubSchema = subSchema;
