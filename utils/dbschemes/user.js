@@ -53,7 +53,7 @@ var UserSchema = mongoose.Schema({
     salt: { type: String, default: generateSalt },
     date_joined: { type: Date, default: Date.now },
     friends: [{ type: ObjectId, ref: 'User' }],
-    subs: [ObjectId]
+    subs: [{type: String, required: true}]
 },{ strict: true });
 
 // create model of user schema

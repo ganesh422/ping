@@ -11,10 +11,13 @@ var logger = require('./utils/logger');
 var sys = require('sys');
 var domain = require('domain');
 var cluster = require('cluster');
+var db = require('./utils/db');
 
 // routes
 var routes = require('./routes/index');
 var people = require('./routes/people');
+var posts = require('./routes/posts');
+var subs = require('./routes/subs');
 var home = require('./routes/home');
 var users = require('./routes/users');
 var ajax = require('./routes/ajax');
@@ -43,12 +46,17 @@ stdin.addListener("data", function(d) {
             logger.warn('shutting down https server.'.red.bold);
             https_server.close();
             start();
+            break;
         case 'res':
             logger.warn('shutting down http server.'.red.bold);
             http_server.close();
             logger.warn('shutting down https server.'.red.bold);
             https_server.close();
             start();
+            break;
+        case 'users':
+            // to do
+            break;
     }
 });
 
@@ -97,6 +105,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/people', people);
+app.use('/posts', posts);
+app.use('/subs', subs);
 app.use('/home', home);
 app.use('/users', users);
 app.use('/ajax', ajax);
@@ -145,6 +155,8 @@ app.use(function(err, req, res, next) {
 });
 
 function start(){
+    //db.db_create_ALL_sub();
+
     var workers = process.env.WORKERS || require('os').cpus().length;
 
     if (cluster.isMaster) {

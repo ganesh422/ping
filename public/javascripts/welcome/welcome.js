@@ -25,17 +25,51 @@ app.controller("sign_in", function($scope, $http){
 		    
 		    /* Check whether the HTTP Request is successful or not. */
 			request.success(function(data){
+
+				var uname;
 			    if(data.isValid){
+
+			    	// get username and save it for later use
+			    	$.ajax({
+						type: "post",
+						url: "/people/pseudolookup",
+						data: { valuid: window.sessionStorage.getItem("ping_uid") },
+						success: function(data){
+							if(data.pseudoforid != undefined){
+								if(window.localStorage.getItem("ping_pseudo") != undefined ||
+									window.sessionStorage.getItem("ping_pseudo") != undefined){
+									window.localStorage.removeItem("ping_pseudo");
+									window.sessionStorage.removeItem("ping_pseudo");
+								}
+								if($("#checkbox_saveuname").is(":checked")){
+									window.localStorage.setItem("ping_pseudo", data.pseudoforid);
+									window.sessionStorage.setItem("ping_pseudo", data.pseudoforid);
+								}else{
+									window.sessionStorage.setItem("ping_pseudo", data.pseudoforid);
+								}
+							}else{
+								printError("couldn't get username. error.")
+							}
+						},error: function(data){
+							if(data.errorHappened){
+								printError("there was an internal server error.");
+							}else if(data.userNotFound){
+								console.log("there was no user with that id.");
+							}
+						}
+					});
+
 			    	if($("#checkbox_saveuname").is(":checked")){
-			    		// store username data as permanent cookie
+			    		// store user data as permanent
 			    		if(window.localStorage.getItem("ping_uid") != undefined ||
 			    		 window.localStorage.getItem("ping_uid") != undefined){
 							window.localStorage.removeItem("ping_uid");
 							window.sessionStorage.removeItem("ping_uid");
 						}
 						window.localStorage.setItem("ping_uid", data.valu);
+						window.sessionStorage.setItem("ping_uid", data.valu);
 			    	}else{
-			    		// store username data as session lifetime cookie
+			    		// store user data as session lifetime 
 						if(window.localStorage.getItem("ping_uid") != undefined ||
 			    		 window.localStorage.getItem("ping_uid") != undefined){
 							window.localStorage.removeItem("ping_uid");
@@ -162,8 +196,10 @@ function pseudolookup_insert_uname(uid){
 // -hide register panel
 // -get username/uid from local/session storage
 function welcome_start(){
+	//var dg_H = screen.height;
+	//var dg_W = screen.width;
 	$('#bgcontainer img.bgfade').hide();
-    $('#bgcontainer').css({'height':'100%','width':'100%'});
+    $('#bgcontainer').css({'height':'120%','width':'100%'});
 	anim();
 	$(window).resize(function(){window.location.href=window.location.href})
 	set_welcome_click_listeners();

@@ -12,6 +12,7 @@ html
     script(src='/components/jquery/jquery-ui/jquery-ui.js')
 
     // javascript files
+    script(src='/javascripts/home/home.js')
     script(src='/javascripts/ajax.js')
     script(src='/javascripts/bg.js')
     script(src='/javascripts/start.js')
@@ -20,19 +21,28 @@ html
 
     script.
         $(document).ready(function() {
-            if(window.localStorage.getItem("ping_uid") != undefined){
-                console.log(window.localStorage.getItem("ping_uid"));
-            }else{
-                console.log(window.sessionStorage.getItem("ping_uid"));
-            }
-            
-            https_redirect();
-        });       
+            home_start();
+        });
 
   body
     .header
         .header-content
             img#logo(src='/images/ping_logo.png')
-            p#newpost(onclick="newpost") create new post
+            #container
+                p#newpost create new post
+                p#newsub create new sub
+                p#errors
     center
+        #content(ng-app="content")
+            #newpostpanel(ng-controller="new_post")
+                textarea#textinput.longInput.input(cols='30' ng-model="post_text" placeholder="what's on your mind?")
+                br
+                #postpanelbottom(ng-controller="sub_fetch" ng-init="init()")
+                    select#subselect(ng-click="init()")
+                        option(ng-repeat="sub in followedSubs track by $index" value="{{sub}}") {{sub}}
+                    input#submitpostbutton(type="button" value="Submit" ng-click="submit()")
+            #newsubpanel(ng-controller="new_sub")
+                input#subnameinput.input(type="text" placeholder="enter the sub's new name..." maxlength="20" ng-model="sub_name")
+                br
+                input#submitsubbutton(type="button" value="Submit" ng-click="submit()")
         
