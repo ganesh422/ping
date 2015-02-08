@@ -59,11 +59,8 @@ app.controller("sub_fetch", function($scope, $http){
 
 	$scope.init = function () {
     	var request = $http({
-    		method: "post",
-    		url: "/subs/fetch",
-    		data: {
-    			valpseudo: window.sessionStorage.getItem("ping_pseudo")
-    		}
+    		method: "get",
+    		url: "/subs/fetch"
     	});
 
     	request.success(function(results){
@@ -80,12 +77,6 @@ app.controller("sub_fetch", function($scope, $http){
 });
 
 function home_start(){
-	if(window.localStorage.getItem("ping_uid") != undefined){
-		console.log(window.localStorage.getItem("ping_uid"));
-	}else{
-		console.log(window.sessionStorage.getItem("ping_uid"));
-	}
-
 	$('textarea').on('keyup',function(){
 	  var spanwidth = $('span').css('width')
 	  $('textarea').css('width',spanwidth) 
@@ -128,17 +119,8 @@ function set_home_click_listeners(){
 function set_home_close_listener(){
 	window.onbeforeunload = function (e) {
 		$.ajax({
-			type: "post",
-			url: "/people/bye",
-			data: { valuid: window.sessionStorage.getItem("ping_uid") },
-			success: function(data){
-			},error: function(data){
-				if(data.errorHappened){
-					printError("there was an internal server error.");
-				}else if(data.userNotFound){
-					console.log("there was no user with that id.");
-				}
-			}
+			type: "get",
+			url: "/logout"
 		});
 	};
 }

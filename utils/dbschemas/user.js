@@ -9,6 +9,7 @@
 var mongoose = require('mongoose');
 var ObjectId = mongoose.Schema.Types.ObjectId;
 var crypto = require('crypto');
+var statics = require('../../utils/statics');
 
 /*
  * more information about the user relationships, etc.:
@@ -26,13 +27,13 @@ var crypto = require('crypto');
  * https://crackstation.net/hashing-security.htm
  * for dart: https://pub.dartlang.org/packages/cipher
  */
-function setPassword(wp){
-    return crypto.pbkdf2Sync(wp , this.salt, 10000, 512);
+function setPassword(passwd){
+    return crypto.pbkdf2Sync(passwd , this.salt, statics.PBKDF2_ITERATIONS, statics.PBKDF2_LENGTH);
 }
 
 /* used to generate a random salt for each user */
 function generateSalt() {
-    return crypto.randomBytes(64).toString('base64');
+    return crypto.randomBytes(statics.SALT_LENGTH).toString('base64');
 }
 
 /* used to make sure that an email address
@@ -46,10 +47,10 @@ function toLower(str){
 
 /* USER SCHEMA */
 var UserSchema = mongoose.Schema({
-    eaddress: { type: String, required: true, set: toLower, trim: true },
+    email: { type: String, required: true, set: toLower, trim: true },
     name: { type: String, required: true },
-    pseudo: {type: String, trim: true },
-    wp: { type: String, required: true, set: setPassword },
+    pseudonym: {type: String, trim: true },
+    passwd: { type: String, required: true, set: setPassword },
     salt: { type: String, default: generateSalt },
     date_joined: { type: Date, default: Date.now },
     friends: [{ type: ObjectId, ref: 'User' }],
@@ -60,23 +61,23 @@ var UserSchema = mongoose.Schema({
 User = mongoose.model('User', UserSchema);
 
 // make sure pseudonym is unique (unique keyword above doesn't work)
-User.schema.path('eaddress').validate(function (value, respond) {                                                                                           
-    User.findOne({ eaddress: value }, function (err, user) {                                                                                                
+User.schema.path('email').validate(function (value, respond) {                                                                                           
+    User.findOne({ email: value }, function (err, user) {                                                                                                
         if(user){
             respond(false);
         }else{
             respond(true);
         }                                                                                                                       
     });                                                                                                                                                  
-}, 'This email address is already registered');
+}, statics.EMAIL_IN_USE.toString());
 
 // make sure pseudonym is unique (unique keyword above doesn't work)
-User.schema.path('pseudo').validate(function (value, respond) {                                                                                           
-    User.findOne({ pseudo: value }, function (err, user) {                                                                                                
+User.schema.path('pseudonym').validate(function (value, respond) {                                                                                           
+    User.findOne({ pseudonym: value }, function (err, user) {                                                                                                
         if(user){
             // in case the user wants no pseudonym
             // "" duplicates are allowed
-            if(user.pseudo == undefined){
+            if(user.pseudonym == undefined){
                 respond(true);
             }else{
                 respond(false);
@@ -85,7 +86,7 @@ User.schema.path('pseudo').validate(function (value, respond) {
             respond(true);
         }                                                                                                                       
     });                                                                                                                                                  
-}, 'This pseudonym is already registered');
+}, statics.PSEUDO_IN_USE.toString());
 
 module.exports.User = User;
 module.exports.UserSchema = UserSchema;

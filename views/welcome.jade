@@ -1,0 +1,71 @@
+html
+  head
+    title Welcome to Ping!
+    link(rel='stylesheet', href='/components/bootstrap/bootstrap_paper.css')
+    // load bootstrap css
+    link(rel='stylesheet', href='stylesheets/welcome.css')
+    script(src='/components/angular/angular.js')
+    script(src='/components/jquery/jquery.js')
+    script(src='/components/jquery/jquery-ui/jquery-ui.js')
+    script(src='/javascripts/bg.js')
+    script(src='/javascripts/misc.js')
+    script(src='/javascripts/welcome/welcome.js')
+    script(src='/javascripts/start.js')
+    script.
+      $(document).ready(function() {
+      https_redirect();
+      start_welcome();
+      });
+  body(ng-app='welcome')
+    .content(ng-controller='WelcomeController')
+      #bgcontainer
+        img.bgfade(src='/images/austria_sg.jpg')                
+        img.bgfade(src='/images/greece_olivetree.jpg')                
+        img.bgfade(src='/images/greece_olivetree_closeup.jpg')           
+      .container
+        #signin.col-sm-6.col-sm-offset-3
+          h1
+            span.fa.fa-sign-in Sign in
+          #errors_signin.alert.alert-danger(ng-model='errors_signin')
+          // LOGIN FORM
+          form(ng-submit='signin()')
+            .form-group
+              label Email/Pseudonym
+              input#input_emailpseudonym.form-control(type='text', ng-model='emailpseudonym')                      
+            .form-group
+              label Password
+              input#input_passwd_signin.form-control(type='password', ng-model='passwd_signin')                        
+            button.btn.btn-primary.btn-lg(type='submit') Login
+            input(style='margin-left: 20px;', type='checkbox')                        
+            label(type='') Save my data
+          hr                   
+          p Need an account? 
+            a(onclick="$('#signin').hide(); $(':input').val(''); $('#errors_signup').hide(); $('#signup').show();") Sign up
+        #signup.col-sm-6.col-sm-offset-3
+          h1
+            span.fa.fa-sign-in Sign up
+          #errors_signup.alert.alert-danger(ng-model='errors_signup')
+          // SIGNUP FORM
+          form(ng-submit='signup()')
+            .form-group
+              label Email
+              input#input_email.form-control(type='text', ng-model='email')                      
+            .form-group
+              label Name
+              input#input_name.form-control(type='text', ng-model='name')                      
+            .form-group
+              label Pseudonym
+              input#input_pseudonym.form-control(type='text', placeholder='(optional)', ng-model='pseudonym')                      
+            .form-group
+              label Password
+              input#input_passwd.form-control(type='password', placeholder="(min. 6 digits)", ng-model='passwd')
+              input#input_passwdr.form-control(type='password', placeholder='confirm password', ng-model='passwdr')
+            button.btn.btn-success.btn-lg(type='submit') Sign up
+          hr                    
+          p Already have an account? 
+            a(onclick="$('#signup').hide(); $(':input').val(''); $('#errors_signin').hide(); $('#signin').show();") Login
+    #footer
+      img(src='/images/ping_logo.png')           
+      #http_warning
+        p HTTP is very insecure, please visit the HTTPS page. 
+          a(href='/whyusehttps') Why?

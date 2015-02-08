@@ -1,5 +1,25 @@
-extends layout
-
-block content
-   h1= title
-   p Welcome to #{title}
+html
+  head
+    title #{title}
+    link(rel='stylesheet', href='/components/bootstrap/bootstrap_paper.css')
+    link(rel='stylesheet', href='//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css')
+    style.
+      body{ padding-top:80px; word-wrap:break-word; }
+  body
+    .container
+      .page-header.text-center
+        h1
+          span.fa Profile Page   
+        a.btn.btn-default.btn-sm(href='/logout') Logout
+      .row
+        // LOCAL INFORMATION
+        .col-sm-6
+          .well
+            h3
+              span.fa.fa-user  Local                
+            p
+              strong id: #{user._id}
+              br
+              strong pseudonym: #{user.pseudonym}
+              br
+              strong email: #{user.email}

@@ -1,27 +1,42 @@
 //modules
-var express = require('express');
-var http = require('http');
-var https = require('https');
-var path = require('path');
-var favicon = require('serve-favicon');
+var express      = require('express');
+var http         = require('http');
+var https        = require('https');
+var path         = require('path');
+var favicon      = require('serve-favicon');
 var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var fs = require('fs');
-var logger = require('./utils/logger');
-var sys = require('sys');
-var domain = require('domain');
-var cluster = require('cluster');
-var db = require('./utils/db');
+var bodyParser   = require('body-parser');
+var session      = require('client-sessions');
+var fs           = require('fs');
+var logger       = require('./utils/logger');
+var sys          = require('sys');
+var domain       = require('domain');
+var cluster      = require('cluster');
+var db           = require('./utils/db');
 
 // routes
-var routes = require('./routes/index');
-var people = require('./routes/people');
-var posts = require('./routes/posts');
-var subs = require('./routes/subs');
-var home = require('./routes/home');
-var users = require('./routes/users');
-var ajax = require('./routes/ajax');
-var images = require('./routes/images');
+var routes = require('./routes/routes');
+
+/* ==================================================================================
+ *                                  VARIABLES
+ */
+
+var http_server;
+var https_server;
+
+// port variables
+var http_port = process.env.port || 1337;
+var https_port = process.env.port || 1338;
+
+var privateKey  = fs.readFileSync('./sslcert/key.pem');
+var certificate = fs.readFileSync('./sslcert/cert.pem');
+
+var options = {key: privateKey, cert: certificate};
+
+/*
+ *                                END VARIABLES
+/* ==================================================================================*/
+
 
 // allow input in console
 // react to input in console
@@ -60,34 +75,9 @@ stdin.addListener("data", function(d) {
     }
 });
 
-/* ==================================================================================
- *                                  VARIABLES
- */
-
-var http_server;
-var https_server;
-
-// port variables
-var http_port = process.env.port || 1337;
-var https_port = process.env.port || 1338;
-
-var privateKey  = fs.readFileSync('./sslcert/key.pem');
-var certificate = fs.readFileSync('./sslcert/cert.pem');
-
-var options = {key: privateKey, cert: certificate};
-
-/*
- *                                END VARIABLES
-/* ==================================================================================*/
-
-
-
 
 // initialise express
 var app = express();
-
-logger.debug("Overriding 'Express' logger");
-
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -98,27 +88,25 @@ app.set('development', function () { app.locals.pretty = true; });
 // uncomment after placing your favicon in /public
 app.use(favicon(__dirname + '/public/favicon.ico'));
 
+// session cookies
+var auth_session = session({
+    cookieName: 'ping_authenticated', 
+    requestKey: 'ping_authenticated_user', /*overrides cookieName for the key name added to the request object*/ 
+    secret: 'pingisloveislife', 
+    duration: 2*60*60*1000 /*2 hours*/,
+    activeDuration: 1*60*60*1000,
+    httpOnly: true, /*client side js can not access the cookie*/
+    secure: true/*,
+    ephemeral: true /*cookie gets deleted when browser is closed*/
+});
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(auth_session);
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
-app.use('/people', people);
-app.use('/posts', posts);
-app.use('/subs', subs);
-app.use('/home', home);
-app.use('/users', users);
-app.use('/ajax', ajax);
-app.use('/images', images);
-app.use('/hello/:name', function(req, res){
-    res.send('Hello, ' + req.params.name);
-});
-/* GET demo page. */
-app.get('/demo', function(req, res) {
-  logger.info('GET request for /  ::--> returned demo.jade');
-  res.render('demo.jade', {"title": "ping"});
-});
 
 // logging
 app.use(require('morgan')({ "stream": logger.stream }));
@@ -154,6 +142,7 @@ app.use(function(err, req, res, next) {
     });
 });
 
+// cluster start
 function start(){
     //db.db_create_ALL_sub();
 

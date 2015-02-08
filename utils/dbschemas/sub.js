@@ -2,8 +2,8 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = ObjectId = Schema.ObjectId;
 var crypto = require('crypto');
-var Post = require('../dbschemes/post.js').Post;
-var User = require('../dbschemes/user.js').User;
+var Post = require('../dbschemas/post.js').Post;
+var User = require('../dbschemas/user.js').User;
 
 /* COMMUNITY */
 var subSchema = Schema({

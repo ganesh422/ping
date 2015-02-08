@@ -8,7 +8,9 @@ function https_redirect(){
 
 	// because it only works with standard ports, we use this for now
 	if(window.location.protocol == "http:"){
-		$("#errors").text("HTTP is very insecure, please visit the HTTPS page.");
+		$("#http_warning").show();
+	}else{
+		$("#http_warning").hide();
 	}
 }
 
