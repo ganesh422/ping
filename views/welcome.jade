@@ -36,8 +36,6 @@ html
               label Password
               input#input_passwd_signin.form-control(type='password', ng-model='passwd_signin')                        
             button.btn.btn-primary.btn-lg(type='submit') Login
-            input(style='margin-left: 20px;', type='checkbox')                        
-            label(type='') Save my data
           hr                   
           p Need an account? 
             a(onclick="$('#signin').hide(); $(':input').val(''); $('#errors_signup').hide(); $('#signup').show();") Sign up
@@ -68,4 +66,4 @@ html
       img(src='/images/ping_logo.png')           
       #http_warning
         p HTTP is very insecure, please visit the HTTPS page. 
-          a(href='/whyusehttps') Why?
+          a(href='/about/http') Why?
