@@ -72,13 +72,13 @@ function insert_signup_mdb(email, name, pseudonym, passwd, ip, returnData /*call
 	newUser.save(function(err){
 		if(err){
 			if(err.toString() == 'ValidationError: ' + statics.PSEUDO_IN_USE.toString() + ', ' + statics.EMAIL_IN_USE.toString()){
-		      	logger.error('user (email ("'+email+'") and pseudo ("'+pseudonym+'")) already exists' + ' (' + ip.bold.white + ')');
+		      	logger.error(ip.bold.white + ': user (email ("'+email.white+'") and pseudo ("'+pseudonym.white+'")) already exists');
                 returnData(statics.EMAILPSEUDO_IN_USE);
 		    }else if(err.toString() == 'ValidationError: ' + statics.EMAIL_IN_USE){
-		      	logger.error('user (email ("'+email+'")) already exists.' + ' (' + ip.bold.white + ')');
+		      	logger.error(ip.bold.white + ': user (email ("'+email.white+'")) already exists.');
                 returnData(statics.EMAIL_IN_USE);
 		    }else if(err.toString() == 'ValidationError: ' + statics.PSEUDO_IN_USE){
-		      	logger.error('user (pseudonym ("'+pseudonym+'")) already exists.' + ' (' + ip.bold.white + ')');
+		      	logger.error(ip.bold.white + ': user (pseudonym ("'+pseudonym.white+'")) already exists.');
                 returnData(statics.PSEUDO_IN_USE);
 		    }else{
 		      	logger.error(err + ' (' + ip.bold.white + ')');
@@ -86,7 +86,7 @@ function insert_signup_mdb(email, name, pseudonym, passwd, ip, returnData /*call
 		    }
 		}else {
             // successful registration
-            logger.info('new user ' + name.white.bold + ' / ' + email.white.bold + ' registered! (' + ip.white.bold + ')');
+            logger.info(ip.white.bold + ': new user ' + name.white.bold + ' / ' + email.white.bold + ' registered!');
             returnData(statics.REGISTRATION_SUC);
         }
 	});
@@ -119,15 +119,15 @@ function login_mdb(emailpseudonym, passwd, ip, returnData /*callback*/){
 
 		if(result){
 			if(result.passwd == crypto.pbkdf2Sync(passwd, result.salt, statics.PBKDF2_ITERATIONS, statics.PBKDF2_LENGTH)){
-				logger.info("user (credentials: " + emailpseudonym.white.bold + ") logged in. (" + ip.white.bold + ")");
+				logger.info(ip.white.bold + ': user (credentials: ' + emailpseudonym.white + ') logged in.');
 		    	userlist_add_user(result.pseudonym);
 				returnData(statics.LOGIN_SUC, result.pseudonym, result._id, result.email);
 			}else{
-				logger.warn("user (credentials: " + emailpseudonym.white.bold + ") entered invalid password.");
+				logger.warn(ip.white.bold + ': user (credentials: ' + emailpseudonym.white + ') entered invalid password.');
 				returnData(statics.INVALID_WP);
 			}
 		}else{
-			logger.warn("query for user (credentials: " + emailpseudonym.white.bold + ") returned no result.");
+			logger.warn(ip.white.bold + ': query for user (credentials: ' + emailpseudonym.white + ') returned no result.');
 			returnData(statics.ACCOUNT_NOT_FOUND);
 		}
 	});
