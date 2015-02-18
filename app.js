@@ -90,11 +90,11 @@ app.use(favicon(__dirname + '/public/favicon.ico'));
 
 // session cookies
 var auth_session = session({
-    cookieName: 'ping_authenticated', 
-    requestKey: 'ping_authenticated_user', /*overrides cookieName for the key name added to the request object*/ 
+    cookieName: 'ping_session', 
+    requestKey: 'ping_session', /*overrides cookieName for the key name added to the request object*/ 
     secret: 'pingisloveislife', 
     duration: 2*60*60*1000 /*2 hours*/,
-    activeDuration: 1*60*60*1000,
+    activeDuration: 1*60*60*1000, /*if the client performs an action within 1 hour, the cookie will live for another 2 hours*/
     httpOnly: true, /*client side js can not access the cookie*/
     secure: true/*,
     ephemeral: true /*cookie gets deleted when browser is closed*/
