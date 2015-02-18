@@ -1,0 +1,15 @@
+html
+  head
+    title #{title}
+    link(rel='stylesheet', href='/components/bootstrap/bootstrap_paper.css')
+    link(rel='stylesheet', href='//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css')
+    style.
+      body{ padding-top:80px; word-wrap:break-word; }
+  body
+    center
+      .col-sm-6(style='float:center;')
+        .well
+          h3
+            span.fa #{subjecttitle}               
+          p
+            strong #{message}
