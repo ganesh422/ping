@@ -3,14 +3,16 @@ var router = express.Router();
 var get_ip = require('ipware')().get_ip;
 var logger = require('../utils/logger');
 var db = require('../utils/db');
-var status_codes = require('../utils/statics'); 
+var statics = require('../utils/statics');
+
+var ip_info; // store user's ip
 
 // =============================================
 // ============REDIRECT WITHOUT LOGIN===========
 // =============================================
 function requireLogin(req, res, next){
-	if(!req.ping_authenticated_user._id){
-		logger.warn('User (' + get_ip(req).clientIp.toString().white.bold + ') was redirected to /welcome (NO LOGIN)');
+	if(!req.ping_session._id){
+		logger.warn(get_ip(req).clientIp.toString().white.bold + ' User was redirected to /welcome ' + '(NO LOGON)'.red.bold);
 		res.redirect('/welcome');
 	}else{
 		next();
@@ -21,20 +23,27 @@ function requireLogin(req, res, next){
 // WELCOME PAGE (login, registration, etc.)=====
 // =============================================
 router.get('/welcome', function(req, res){
-	var ip_info = get_ip(req).clientIp;
-  	logger.info(ip_info.toString().white.bold + ': ' + 'GET'.yellow.bold + ' request for ' + '/welcome'.blue.bold);
-  	// console.log(req.sessionID.toString());
-	res.render('welcome.jade');
+	ip_info = get_ip(req).clientIp;
+	logger.info(ip_info.toString().white.bold + ': ' + 'GET'.yellow.bold + ' request for ' + '/welcome'.blue.bold);
+
+	// if user is already logged in
+	// redirect to his profile
+	if(req.ping_session._id){
+		logger.info(ip_info.toString().white.bold + ': ' + req.ping_session._id.bgWhite.black.bold + ' (' + req.ping_session.pseudonym + ') was redirected to /people/me.');
+		res.redirect('/people/me');
+	}else{
+		res.render('welcome.jade');
+	}
 });
 
 router.post('/login', function(req, res){
-	var ip_info = get_ip(req).clientIp;
+	ip_info = get_ip(req).clientIp;
 	logger.info(ip_info.toString().white.bold + ': ' + 'POST'.yellow.bold + ' request for ' + '/login'.blue.bold);
     db.login_mdb(req.body.emailpseudonym, req.body.passwd, ip_info, function(response_status, pseudonym, id, email){
-        if(pseudonym && id && response_status == status_codes.LOGIN_SUC){
-        	req.ping_authenticated_user.pseudonym = pseudonym;
-        	req.ping_authenticated_user._id = id;
-        	req.ping_authenticated_user.email = email;
+        if(pseudonym && id && response_status == statics.LOGIN_SUC){
+        	req.ping_session.pseudonym = pseudonym;
+        	req.ping_session._id = id;
+        	req.ping_session.email = email;
             res.status(200).json({status: response_status});
         }else{
             res.status(403).json({status: response_status});
@@ -43,10 +52,10 @@ router.post('/login', function(req, res){
 });
 
 router.post('/signup', function(req, res){
-	var ip_info = get_ip(req).clientIp;
+	ip_info = get_ip(req).clientIp;
 	logger.info(ip_info.toString().white.bold + ': ' + 'POST'.yellow.bold + ' request for ' + '/signup'.blue.bold);
 	db.insert_signup_mdb(req.body.email, req.body.name, req.body.pseudonym, req.body.passwd, ip_info, function(response_status){
-		if(response_status == status_codes.REGISTRATION_SUC){
+		if(response_status == statics.REGISTRATION_SUC){
            	res.status(200).json({status: response_status});
         }else{
             res.status(403).json({status: response_status});
@@ -58,9 +67,8 @@ router.post('/signup', function(req, res){
 // =================HOME PAGE===================
 // =============================================
 router.get('/', requireLogin, function(req, res){
-	var ip_info = get_ip(req).clientIp;
+	ip_info = get_ip(req).clientIp;
 	logger.info(ip_info.toString().white.bold + ': ' + 'POST'.yellow.bold + ' request for ' + '/'.blue.bold);
-	console.log(req.ping_authenticated_user);
 	res.render('home');
 });
 
@@ -68,10 +76,10 @@ router.get('/', requireLogin, function(req, res){
 // =================PROFILES====================
 // =============================================
 router.get('/people/me', requireLogin, function(req, res){
-	res.render('people', {title: 'Your profile', user: req.ping_authenticated_user});
+	res.render('people', {title: 'Your profile', user: req.ping_session});
 });
 
-router.get('/people/:id', function(req, res){
+router.get('/people/:pseudonym', function(req, res){
 
 });
 
@@ -79,12 +87,19 @@ router.get('/people/:id', function(req, res){
 // ==================LOGOUT=====================
 // =============================================
 router.get('/logout', function(req, res){
-	if(req.ping_authenticated_user._id){
-		logger.info(req.ping_authenticated_user._id.bgWhite.black.bold + ' (' + req.ping_authenticated_user.pseudonym.bold.white + ') logged out.');
-		req.ping_authenticated_user.reset();
+	if(req.ping_session._id){
+		logger.info(get_ip(req).clientIp.toString().white.bold + ': ' + req.ping_session._id.bgWhite.black.bold + ' (' + req.ping_session.pseudonym.bold.white + ') logged out.');
+		req.ping_session.reset();
 	}
-	db.userlist_remove_user(req.ping_authenticated_user.pseudonym);
+	db.userlist_remove_user(req.ping_session.pseudonym);
 	res.redirect('/welcome');
+});
+
+// =============================================
+// ===================ETC=======================
+// =============================================
+router.get('/about/http', function(req, res){
+	res.render('about', {title: 'Why use HTTPS?', subjecttitle:'HTTP/HTTPS', message: statics.ABOUT_HTTP_MESSAGE});
 });
 
 module.exports = router;
