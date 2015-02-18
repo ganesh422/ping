@@ -34,7 +34,9 @@ app.controller("WelcomeController", function($scope, $http){
 			});
 
 			request.error(function(data){
-				console.log(data.status);
+				if(data.status == "The password you entered is invalid."){
+					$scope.passwd_signin = "";
+				}
 				errors_signin.text(data.status);
 				errors_signin.show();
 			});
@@ -54,6 +56,8 @@ app.controller("WelcomeController", function($scope, $http){
 		}else if($scope.passwd.length < 6){
 			errors_signup.text("Your password must be at least 6 digits long.");
 			errors_signup.show();
+			$scope.passwd = "";
+			$scope.passwdr = "";
 		}else if($scope.passwd != $scope.passwdr){
 			errors_signup.text("The passwords you entered don't match.");
 			errors_signup.show();
