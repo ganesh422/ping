@@ -30,7 +30,7 @@ app.controller("WelcomeController", function($scope, $http){
 			});
 
 			request.success(function(data){
-				window.location = "/people/me";
+				window.location = "/me";
 			});
 
 			request.error(function(data){
@@ -99,4 +99,5 @@ function welcome_start(){
     $("#bgcontainer").css({"height":"120%","width":"100%"});
     anim();
     //$(window).resize(function(){window.location.href=window.location.href});
+    $("#input_emailpseudonym").focus();
 }
