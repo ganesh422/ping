@@ -38,7 +38,7 @@ html
             button.btn.btn-primary.btn-lg(type='submit') Login
           hr                   
           p Need an account? 
-            a(onclick="$('#signin').hide(); $(':input').val(''); $('#errors_signup').hide(); $('#signup').show();") Sign up
+            a(onclick="$('#signin').hide(); $(':input').val(''); $('#errors_signup').hide(); $('#signup').show(); $('#input_email').focus();") Sign up
         #signup.col-sm-6.col-sm-offset-3
           h1
             span.fa.fa-sign-in Sign up
@@ -61,7 +61,7 @@ html
             button.btn.btn-success.btn-lg(type='submit') Sign up
           hr                    
           p Already have an account? 
-            a(onclick="$('#signup').hide(); $(':input').val(''); $('#errors_signin').hide(); $('#signin').show();") Login
+            a(onclick="$('#signup').hide(); $(':input').val(''); $('#errors_signin').hide(); $('#signin').show(); $('#input_emailpseudonym').focus();") Login
     #footer
       img(src='/images/ping_logo.png')           
       #http_warning
