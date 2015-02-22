@@ -13,8 +13,6 @@ html
 
     // javascript files
     script(src='/javascripts/home/home.js')
-    script(src='/javascripts/ajax.js')
-    script(src='/javascripts/bg.js')
     script(src='/javascripts/start.js')
     script(src='/javascripts/misc.js')
     script(src='/javascripts/info.js')
@@ -31,18 +29,21 @@ html
             #container
                 p#newpost create new post
                 p#newsub create new sub
+                p#logout logout
                 p#errors
     center
         #content(ng-app="content")
             #newpostpanel(ng-controller="new_post")
-                textarea#textinput.longInput.input(cols='30' ng-model="post_text" placeholder="what's on your mind?")
+                input#input_title.form-control(type='text', placeholder="title" ng-model='title')
+                textarea#textinput.form-control.longInput(cols='30' ng-model="post_text" placeholder="what's on your mind?")
                 br
                 #postpanelbottom(ng-controller="sub_fetch" ng-init="init()")
-                    select#subselect(ng-click="init()")
+                    select#subselect.form-control(ng-click="init()")
                         option(ng-repeat="sub in followedSubs track by $index" value="{{sub}}") {{sub}}
-                    input#submitpostbutton(type="button" value="Submit" ng-click="submit()")
+                    br
+                    button#submitpostbutton.btn.btn-info.btn-lg(type='submit' ng-click="submit()") Submit
             #newsubpanel(ng-controller="new_sub")
-                input#subnameinput.input(type="text" placeholder="enter the sub's new name..." maxlength="20" ng-model="sub_name")
+                input#subnameinput.form-control(type="text" placeholder="enter the sub's new name..." maxlength="20" ng-model="sub_name")
                 br
-                input#submitsubbutton(type="button" value="Submit" ng-click="submit()")
+                button#submitsubbutton.btn.btn-success.btn-lg(type='submit' ng-click="submit()") Submit
         

@@ -58,12 +58,26 @@ body{
     -ms-user-select: none;
     user-select: none;
 }
+
+#logout{
+    cursor: pointer;
+    float:left;
+    margin-left: 10px;
+
+    /*make the text unselectable for the user*/
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
 /* TOP HEADER END */
 
 /* CONTENT */
 #newpostpanel{
     background-color: #fff;
-    height: 170px;
+    height: 270px;
     width: 400px;
     margin-top: 200px;
     padding: 10px;
@@ -72,13 +86,13 @@ body{
 
 #textinput{
     width: 380px;
-    height: 100px;
+    height: 75px;
     max-width: 380px;
-    max-height: 100px;
+    max-height: 75px;
 }
 
 #postpanelbottom{
-    margin-top: 19px;
+    margin-top: 10px;
 }
 
 #subselect{
@@ -88,7 +102,7 @@ body{
 
 #newsubpanel{
     background-color: #fff;
-    height: 100px;
+    height: 150px;
     width: 400px;
     margin-top: 200px;
     padding: 10px;
