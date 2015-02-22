@@ -28,6 +28,8 @@ module.exports = {
 		userlist_remove_user(pseudonym);
 	}, find_user_by_id: function(pseudonym, ip, callback){
 		find_user_by_id(pseudonym, ip, callback);
+	}, insert_new_sub: function(name, admin, ip, callback){
+		insert_new_sub()
 	}
 };
 
@@ -184,6 +186,32 @@ function find_user_by_id(pseudonym, ip, returnData){
 // =============================================
 // ============SUB RELATED FUNCTIONS============
 // =============================================
-function insert_new_sub(){
-	
+function insert_new_sub(name, admin, ip, returnData){
+	dbcon.on('error', function(err){
+		logger.error(err.toString().cyan.italic + '. Is ' + ' mongod '.red.bold + ' running?');
+        returnData(result_status = statics.INTERNAL_ERROR);
+	});
+
+	// the new user itself is created based on the model
+	// the data given by the user is inserted
+	var newSub = new Sub({
+		name: name,
+	    admins: admin
+	});
+
+	newSub.save(function(err){
+		if(err){
+			if(err.toString() == 'ValidationError: ' + statics.SUB_NAME_IN_USE.toString()){
+		      	logger.error(ip.bold.white + ': sub with name "'+name.white+'" already exists');
+                returnData(statics.EMAILPSEUDO_IN_USE);
+		    }else{
+		      	logger.error(err + ' (' + ip.bold.white + ')');
+                returnData(statics.INTERNAL_ERROR);
+		    }
+		}else {
+            // successful registration
+            logger.info(ip.white.bold + ': new sub ' + name.white.bold + ' with admin ' + admin + ' created!');
+            returnData(statics.REGISTRATION_SUC);
+        }
+	});
 }

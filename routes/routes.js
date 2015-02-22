@@ -81,7 +81,7 @@ router.get('/me', requireLogin, function(req, res){
 
 router.get('/u/:pseudonym', requireLogin, function(req, res){
 	ip_info = get_ip(req).clientIp;
-	logger.info(ip_info.toString().white.bold + ': ' + 'POST'.yellow.bold + ' request for ' + ('/u/'+req.params.pseudonym).blue.bold);
+	logger.info(ip_info.toString().white.bold + ': ' + 'GET'.yellow.bold + ' request for ' + ('/u/'+req.params.pseudonym).blue.bold);
 	db.find_user_by_id(req.params.pseudonym, ip_info, function(response_status, pseudo, id, em){
 		if(response_status == statics.ACCOUNT_NOT_FOUND){
 			res.render('error', {title: 'Oops!', errormessage: 'Oops!', message: 'There was no account found by that pseudonym!'});
@@ -104,6 +104,19 @@ router.get('/logout', function(req, res){
 	}
 	db.userlist_remove_user(req.ping_session.pseudonym);
 	res.redirect('/welcome');
+});
+
+// =============================================
+// ===================SUBS======================
+// =============================================
+router.post('/newsub', function(req, res){
+	ip_info = get_ip(req).clientIp;
+	logger.info(ip_info.toString().white.bold + ': ' + 'POST'.yellow.bold + ' request for ' + '/newsub'.blue.bold);
+	db.insert_new_sub(req.body.name, req.body.admin, ip_info, function(response_status){
+		if(response_status == statics.NEWSUB_SUC){
+			
+		}
+	});
 });
 
 // =============================================
