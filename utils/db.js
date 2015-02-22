@@ -26,8 +26,8 @@ module.exports = {
 		userlist_add_user(pseudonym);
 	}, userlist_remove_user: function(pseudonym){
 		userlist_remove_user(pseudonym);
-	}, find_user_by_id: function(pseudonym, callback){
-		find_user_by_id(pseudonym, callback);
+	}, find_user_by_id: function(pseudonym, ip, callback){
+		find_user_by_id(pseudonym, ip, callback);
 	}
 };
 
@@ -156,17 +156,13 @@ function userlist_remove_user(pseudonym){
 // =============================================
 // ==========PROFILE RELATED FUNCTIONS==========
 // =============================================
-function find_user_by_id(pseudonym, returnData){
+function find_user_by_id(pseudonym, ip, returnData){
 	dbcon.on('error', function(err){
 		logger.error(err.toString().cyan.italic + '. Is ' + ' mongod '.red.bold + ' running?');
         returnData(statics.INTERNAL_ERROR);
 	});
 
-	if(misc.checkIfEmailInString(emailpseudonym)){
-		var query = User.findOne({'email': emailpseudonym.toLowerCase()});
-	}else{
-		var query = User.findOne({'pseudonym': emailpseudonym});
-	}
+	var query = User.findOne({'pseudonym': pseudonym});
 
 	query.select('_id pseudonym email');
 
@@ -177,9 +173,9 @@ function find_user_by_id(pseudonym, returnData){
 		}
 
 		if(result){
-			returnData(result._id, result.pseudonym, result.email);
+			returnData(null, result.pseudonym, result._id, result.email);
 		}else{
-			logger.warn(ip.white.bold + ': query for user (credentials: ' + emailpseudonym.white + ') returned no result.');
+			logger.warn(ip.white.bold + ': query for user (credentials: ' + pseudonym.white + ') returned no result.');
 			returnData(statics.ACCOUNT_NOT_FOUND);
 		}
 	});

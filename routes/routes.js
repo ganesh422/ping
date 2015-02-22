@@ -79,12 +79,17 @@ router.get('/me', requireLogin, function(req, res){
 	res.render('people', {title: 'Your profile', user: req.ping_session});
 });
 
-router.get('/people/:pseudonym', function(req, res){
-	db.find_user_by_id(req.params.pseudonym, function(response_status, pseudo, id, em){
+router.get('/u/:pseudonym', requireLogin, function(req, res){
+	ip_info = get_ip(req).clientIp;
+	logger.info(ip_info.toString().white.bold + ': ' + 'POST'.yellow.bold + ' request for ' + ('/u/'+req.params.pseudonym).blue.bold);
+	db.find_user_by_id(req.params.pseudonym, ip_info, function(response_status, pseudo, id, em){
 		if(response_status == statics.ACCOUNT_NOT_FOUND){
 			res.render('error', {title: 'Oops!', errormessage: 'Oops!', message: 'There was no account found by that pseudonym!'});
-		}else if(pseudonym && _id && email){
-			res.render('people', {title: (pseudonym + "'s profile"), user: {pseudonym: pseudo, _id: id, email: em}});
+		}else if(pseudo != undefined && id != undefined && em != undefined){
+			res.render('people', {title: (pseudo + "'s profile"), user: {pseudonym: pseudo, _id: id, email: em}});
+		}else{
+			logger.info('Something went wrong with the request for ' + ('/u/'+req.params.pseudonym).blue.bold);
+			res.render('error', {title: 'Oops!', errormessage: 'Something went wrong. Sorry.'});
 		}
 	});
 });
