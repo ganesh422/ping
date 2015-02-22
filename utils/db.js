@@ -26,6 +26,8 @@ module.exports = {
 		userlist_add_user(pseudonym);
 	}, userlist_remove_user: function(pseudonym){
 		userlist_remove_user(pseudonym);
+	}, find_user_by_id: function(pseudonym, callback){
+		find_user_by_id(pseudonym, callback);
 	}
 };
 
@@ -46,7 +48,7 @@ var Post = require('../utils/dbschemas/post.js').Post;
 
 
 // =============================================
-// ============USER RELATED FUNCTIONS===========
+// =======LOGIN/SIGNUP RELATED FUNCTIONS========
 // =============================================
 /*
  * Registration method
@@ -133,6 +135,7 @@ function login_mdb(emailpseudonym, passwd, ip, returnData /*callback*/){
 	});
 }
 
+// add user to list of currently online users
 function userlist_add_user(pseudonym){
 	userlist.push(pseudonym);
 	logger.info('Number of users online: ' + userlist.length);
@@ -141,11 +144,44 @@ function userlist_add_user(pseudonym){
 	});
 }
 
+// remove user from list of currently online users
 function userlist_remove_user(pseudonym){
 	userlist.splice(userlist.indexOf(pseudonym, 1));
 	logger.info('Number of users online: ' + userlist.length);
 	userlist.forEach(function(entry) {
 		logger.info(entry);
+	});
+}
+
+// =============================================
+// ==========PROFILE RELATED FUNCTIONS==========
+// =============================================
+function find_user_by_id(pseudonym, returnData){
+	dbcon.on('error', function(err){
+		logger.error(err.toString().cyan.italic + '. Is ' + ' mongod '.red.bold + ' running?');
+        returnData(statics.INTERNAL_ERROR);
+	});
+
+	if(misc.checkIfEmailInString(emailpseudonym)){
+		var query = User.findOne({'email': emailpseudonym.toLowerCase()});
+	}else{
+		var query = User.findOne({'pseudonym': emailpseudonym});
+	}
+
+	query.select('_id pseudonym email');
+
+	query.exec(function(err, result){
+		if(err){
+			logger.error(err.toString().cyan.italic + '. Is ' + ' mongod '.red.bold + ' running?');
+        	returnData(statics.INTERNAL_ERROR);
+		}
+
+		if(result){
+			returnData(result._id, result.pseudonym, result.email);
+		}else{
+			logger.warn(ip.white.bold + ': query for user (credentials: ' + emailpseudonym.white + ') returned no result.');
+			returnData(statics.ACCOUNT_NOT_FOUND);
+		}
 	});
 }
 

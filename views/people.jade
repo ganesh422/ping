@@ -9,14 +9,14 @@ html
     .container
       .page-header.text-center
         h1
-          span.fa Profile Page   
+          span.fa #{title}  
         a.btn.btn-default.btn-sm(href='/logout') Logout
       .row
         // LOCAL INFORMATION
         .col-sm-6
           .well
             h3
-              span.fa.fa-user  Local                
+              span.fa.fa-user  Local     
             p
               strong id: #{user._id}
               br

@@ -1,6 +1,14 @@
-//extends layout
-
-block content
-  h1= message
-  h2= error.status
-  pre #{error.stack}
+html
+  head
+    title #{title}
+    link(rel='stylesheet', href='/components/bootstrap/bootstrap_paper.css')
+    style.
+      body{ padding-top:80px; word-wrap:break-word; }
+  body
+    center
+      .col-sm-6(style='float:center;')
+        .well
+          h3
+            span.fa #{errormessage}               
+          p
+            strong #{message}
