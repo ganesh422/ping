@@ -1,0 +1,4 @@
+/node_modules
+/public/components
+/sslcert
+npm-debug.log
