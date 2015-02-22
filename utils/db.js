@@ -28,8 +28,12 @@ module.exports = {
 		userlist_remove_user(pseudonym);
 	}, find_user_by_id: function(pseudonym, ip, callback){
 		find_user_by_id(pseudonym, ip, callback);
-	}, insert_new_sub: function(name, admin, ip, callback){
-		insert_new_sub()
+	}, insert_new_sub: function(name, id, admin, ip, callback){
+		insert_new_sub(name, id, admin, ip, callback);
+	}, fetch_subs: function(pseudonym, ip, callback){
+		fetch_subs(pseudonym, ip, callback);
+	}, insert_new_post: function(creator, title, text, sub, ip, callback){
+		insert_new_post(creator, title, text, sub, ip, callback);
 	}
 };
 
@@ -186,7 +190,7 @@ function find_user_by_id(pseudonym, ip, returnData){
 // =============================================
 // ============SUB RELATED FUNCTIONS============
 // =============================================
-function insert_new_sub(name, admin, ip, returnData){
+function insert_new_sub(name, id, admin, ip, returnData){
 	dbcon.on('error', function(err){
 		logger.error(err.toString().cyan.italic + '. Is ' + ' mongod '.red.bold + ' running?');
         returnData(result_status = statics.INTERNAL_ERROR);
@@ -203,15 +207,81 @@ function insert_new_sub(name, admin, ip, returnData){
 		if(err){
 			if(err.toString() == 'ValidationError: ' + statics.SUB_NAME_IN_USE.toString()){
 		      	logger.error(ip.bold.white + ': sub with name "'+name.white+'" already exists');
-                returnData(statics.EMAILPSEUDO_IN_USE);
+                returnData(statics.SUB_NAME_IN_USE);
 		    }else{
 		      	logger.error(err + ' (' + ip.bold.white + ')');
                 returnData(statics.INTERNAL_ERROR);
 		    }
 		}else {
-            // successful registration
-            logger.info(ip.white.bold + ': new sub ' + name.white.bold + ' with admin ' + admin + ' created!');
-            returnData(statics.REGISTRATION_SUC);
+            // successful
+
+            // add newly created sub to the creator's subs
+            User.findByIdAndUpdate(
+		    	id,
+		    	{$push: {"subs": name}},
+		    	{safe: true, upsert: true},
+		    	function(err, model) {
+		    		if(err){
+		        		logger.error(err.toString());
+		        	}
+		    	}
+			);
+            logger.info(ip.white.bold + ': new sub ' + name.white.bold + ' with admin ' + admin.white.bold + ' created!');
+            returnData(statics.NEWSUB_SUC);
+        }
+	});
+}
+
+function fetch_subs(pseudonym, ip, returnData){
+	dbcon.on('error', function(err){
+		logger.error(err.toString().cyan.italic + '. Is ' + ' mongod '.red.bold + ' running?');
+        returnData(result_status = statics.INTERNAL_ERROR);
+	});
+
+	var query = User.findOne({'pseudonym': pseudonym});
+
+    query.select('subs');
+
+    query.exec(function(err, result){
+    	if(err){
+			logger.error(err.toString().cyan.italic + '. Is ' + ' mongod '.red.bold + ' running?');
+        	returnData(statics.INTERNAL_ERROR);
+		}
+
+		if(result){
+		    returnData(result.subs)
+		}else{
+		    logger.warn(ip.white.bold + ': query for user (credentials: ' + pseudonym + ') returned no result.');
+			returnData(statics.ACCOUNT_NOT_FOUND);
+		}
+    });
+}
+
+// =============================================
+// ============POST RELATED FUNCTIONS===========
+// =============================================
+function insert_new_post(creator, title, text, sub, ip, returnData){
+	dbcon.on('error', function(err){
+		logger.error(err.toString().cyan.italic + '. Is ' + ' mongod '.red.bold + ' running?');
+        returnData(result_status = statics.INTERNAL_ERROR);
+	});
+
+	// the new user itself is created based on the model
+	// the data given by the user is inserted
+	var newPost = new Post({
+		title: title,
+		text: text,
+	    creators: creator,
+	    sub: sub
+	});
+
+	newPost.save(function(err){
+		if(err){
+			logger.error(err + ' (' + ip.bold.white + ')');
+            returnData(statics.INTERNAL_ERROR);
+		}else {
+            logger.info(ip.white.bold + ': new post "' + title.white.bold + '" from user ' + creator.white.bold + ' created in ' + sub.white.bold + '!');
+            returnData(statics.NEWPOST_SUC);
         }
 	});
 }

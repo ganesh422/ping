@@ -109,12 +109,43 @@ router.get('/logout', function(req, res){
 // =============================================
 // ===================SUBS======================
 // =============================================
-router.post('/newsub', function(req, res){
+router.post('/newsub', requireLogin, function(req, res){
 	ip_info = get_ip(req).clientIp;
 	logger.info(ip_info.toString().white.bold + ': ' + 'POST'.yellow.bold + ' request for ' + '/newsub'.blue.bold);
-	db.insert_new_sub(req.body.name, req.body.admin, ip_info, function(response_status){
+	db.insert_new_sub(req.body.name, req.ping_session._id, req.ping_session.pseudonym, ip_info, function(response_status){
 		if(response_status == statics.NEWSUB_SUC){
-			
+			res.status(200).json({status: response_status});
+		}else{
+			res.status(403).json({status: response_status});
+		}
+	});
+});
+
+router.get('/fetchsubs', function(req, res){
+	ip_info = get_ip(req).clientIp;
+	//logger.info(ip_info.toString().white.bold + ': ' + 'GET'.yellow.bold + ' request for ' + '/fetchsubs'.blue.bold);
+	db.fetch_subs(req.ping_session.pseudonym, ip_info, function(response){
+		if(response == statics.ACCOUNT_NOT_FOUND){
+			res.status(403).json({status: response});
+		}else if(response == statics.INTERNAL_ERROR){
+			res.status(403).json({status: response});
+		}else{
+			res.status(200).json({subs: response});
+		}
+	});
+});
+
+// =============================================
+// ===================POSTS=====================
+// =============================================
+router.post('/newpost', function(req, res){
+	ip_info = get_ip(req).clientIp;
+	logger.info(ip_info.toString().white.bold + ': ' + 'POST'.yellow.bold + ' request for ' + '/newpost'.blue.bold);
+	db.insert_new_post(req.ping_session.pseudonym, req.body.title, req.body.text, req.body.sub, ip_info, function(response){
+		if(response == statics.NEWPOST_SUC){
+			res.status(200).json({status: 'New post successfully created!'});
+		}else{
+			res.status(403).json({status: response});
 		}
 	});
 });

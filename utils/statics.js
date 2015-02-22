@@ -15,6 +15,7 @@ var SUB_NAME_IN_USE = 'This sub name already exists.';
 var REGISTRATION_SUC = 101;
 var LOGIN_SUC = 102;
 var NEWSUB_SUC = 103;
+var NEWPOST_SUC = 104;
 var INVALID_WP = 'The password you entered is invalid.';
 var ACCOUNT_NOT_FOUND = 'There is no account with that e-mail/pseudonym.';
 
@@ -26,6 +27,7 @@ module.exports.SUB_NAME_IN_USE = SUB_NAME_IN_USE;
 module.exports.REGISTRATION_SUC = REGISTRATION_SUC;
 module.exports.LOGIN_SUC = LOGIN_SUC;
 module.exports.NEWSUB_SUC = NEWSUB_SUC;
+module.exports.NEWPOST_SUC = NEWPOST_SUC;
 module.exports.INVALID_WP = INVALID_WP;
 module.exports.ACCOUNT_NOT_FOUND = ACCOUNT_NOT_FOUND;
 
