@@ -15,6 +15,7 @@ function generateId() {
 /* POST */
 var postSchema = mongoose.Schema({
 	id: { type: String, default: generateId },
+    title: { type: String, required: true },
 	text: { type: String, required: true },
 	imgsrc: { type: String },
 	creators: [{ type: String, required:true }],
