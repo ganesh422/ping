@@ -75,7 +75,7 @@ router.get('/', requireLogin, function(req, res){
 // =============================================
 // =================PROFILES====================
 // =============================================
-router.get('/people/me', requireLogin, function(req, res){
+router.get('/me', requireLogin, function(req, res){
 	res.render('people', {title: 'Your profile', user: req.ping_session});
 });
 
