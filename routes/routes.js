@@ -110,13 +110,7 @@ router.get('/logout', function(req, res){
 // ===================SUBS======================
 // =============================================
 router.post('/newsub', function(req, res){
-	ip_info = get_ip(req).clientIp;
-	logger.info(ip_info.toString().white.bold + ': ' + 'POST'.yellow.bold + ' request for ' + '/newsub'.blue.bold);
-	db.insert_new_sub(req.body.name, req.body.admin, ip_info, function(response_status){
-		if(response_status == statics.NEWSUB_SUC){
-			
-		}
-	});
+	
 });
 
 // =============================================
