@@ -26,8 +26,8 @@ module.exports = {
 		userlist_add_user(pseudonym);
 	}, userlist_remove_user: function(pseudonym){
 		userlist_remove_user(pseudonym);
-	}, find_user_by_id: function(pseudonym, ip, callback){
-		find_user_by_id(pseudonym, ip, callback);
+	}, find_user_by_pseudonym: function(pseudonym, ip, callback){
+		find_user_by_pseudonym(pseudonym, ip, callback);
 	}, insert_new_sub: function(name, id, admin, ip, callback){
 		insert_new_sub(name, id, admin, ip, callback);
 	}, fetch_subs: function(pseudonym, ip, callback){
@@ -162,7 +162,7 @@ function userlist_remove_user(pseudonym){
 // =============================================
 // ==========PROFILE RELATED FUNCTIONS==========
 // =============================================
-function find_user_by_id(pseudonym, ip, returnData){
+function find_user_by_pseudonym(pseudonym, ip, returnData){
 	dbcon.on('error', function(err){
 		logger.error(err.toString().cyan.italic + '. Is ' + ' mongod '.red.bold + ' running?');
         returnData(statics.INTERNAL_ERROR);

@@ -82,7 +82,7 @@ router.get('/me', requireLogin, function(req, res){
 router.get('/u/:pseudonym', requireLogin, function(req, res){
 	ip_info = get_ip(req).clientIp;
 	logger.info(ip_info.toString().white.bold + ': ' + 'GET'.yellow.bold + ' request for ' + ('/u/'+req.params.pseudonym).blue.bold);
-	db.find_user_by_id(req.params.pseudonym, ip_info, function(response_status, pseudo, id, em){
+	db.find_user_by_pseudonym(req.params.pseudonym, ip_info, function(response_status, pseudo, id, em){
 		if(response_status == statics.ACCOUNT_NOT_FOUND){
 			res.render('error', {title: 'Oops!', errormessage: 'Oops!', message: 'There was no account found by that pseudonym!'});
 		}else if(pseudo != undefined && id != undefined && em != undefined){
