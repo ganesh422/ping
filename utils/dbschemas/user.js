@@ -53,7 +53,7 @@ var UserSchema = mongoose.Schema({
     passwd: { type: String, required: true, set: setPassword },
     salt: { type: String, default: generateSalt },
     date_joined: { type: Date, default: Date.now },
-    friends: [{ type: ObjectId, ref: 'User' }],
+    friends: [{ type: String }],
     subs: [{type: String, required: true}]
 },{ strict: true });
 
