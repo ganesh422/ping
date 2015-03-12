@@ -12,7 +12,6 @@ var logger       = require('./utils/logger');
 var sys          = require('sys');
 var domain       = require('domain');
 var cluster      = require('cluster');
-var db           = require('./utils/db');
 
 // routes
 var routes = require('./routes/routes');
