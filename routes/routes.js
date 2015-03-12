@@ -76,7 +76,7 @@ router.get('/', requireLogin, function(req, res){
 // =================PROFILES====================
 // =============================================
 router.get('/me', requireLogin, function(req, res){
-	res.render('people', {title: 'Your profile', user: req.ping_session});
+	res.render('people', {title: 'Your profile', user: req.ping_session, canEdit: true});
 });
 
 router.get('/u/:pseudonym', requireLogin, function(req, res){
@@ -86,7 +86,17 @@ router.get('/u/:pseudonym', requireLogin, function(req, res){
 		if(response_status == statics.ACCOUNT_NOT_FOUND){
 			res.render('error', {title: 'Oops!', errormessage: 'Oops!', message: 'There was no account found by that pseudonym!'});
 		}else if(pseudo != undefined && id != undefined && em != undefined){
-			res.render('people', {title: (pseudo + "'s profile"), user: {pseudonym: pseudo, _id: id, email: em}});
+			var pagetitle;
+			if(req.ping_session.pseudonym == req.params.pseudonym){
+				pagetitle = 'Your profile';
+			}else{
+				pagetitle = req.params.pseudonym + "'s profile";
+			}
+			res.render('people', {
+				title: pagetitle, 
+				user: {pseudonym: pseudo, _id: id, email: em}, 
+				canEdit: req.ping_session.pseudonym == req.params.pseudonym
+			});
 		}else{
 			logger.info('Something went wrong with the request for ' + ('/u/'+req.params.pseudonym).blue.bold);
 			res.render('error', {title: 'Oops!', errormessage: 'Something went wrong. Sorry.'});
