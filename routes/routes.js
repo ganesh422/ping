@@ -1,6 +1,5 @@
 var express = require('express');
 var router = express.Router();
-var get_ip = require('ipware')().get_ip;
 var logger = require('../utils/logger');
 var db = require('../utils/db');
 var statics = require('../utils/statics');
@@ -12,7 +11,7 @@ var ip_info; // store user's ip
 // =============================================
 function requireLogin(req, res, next){
 	if(!req.ping_session._id){
-		logger.warn(get_ip(req).clientIp.toString().white.bold + ' User was redirected to /welcome ' + '(NO LOGON)'.red.bold);
+		logger.warn(req.connection.remoteAddress.toString().white.bold + ' User was redirected to /welcome ' + '(NO LOGON)'.red.bold);
 		res.redirect('/welcome');
 	}else{
 		next();
@@ -23,7 +22,7 @@ function requireLogin(req, res, next){
 // WELCOME PAGE (login, registration, etc.)=====
 // =============================================
 router.get('/welcome', function(req, res){
-	ip_info = get_ip(req).clientIp;
+	ip_info = req.connection.remoteAddress;
 	logger.info(ip_info.toString().white.bold + ': ' + 'GET'.yellow.bold + ' request for ' + '/welcome'.blue.bold);
 
 	// if user is already logged in
@@ -37,7 +36,7 @@ router.get('/welcome', function(req, res){
 });
 
 router.post('/login', function(req, res){
-	ip_info = get_ip(req).clientIp;
+	ip_info = req.connection.remoteAddress;
 	logger.info(ip_info.toString().white.bold + ': ' + 'POST'.yellow.bold + ' request for ' + '/login'.blue.bold);
     db.login_mdb(req.body.emailpseudonym, req.body.passwd, ip_info, function(response_status, pseudonym, id, email){
         if(pseudonym && id && response_status == statics.LOGIN_SUC){
@@ -52,7 +51,7 @@ router.post('/login', function(req, res){
 });
 
 router.post('/signup', function(req, res){
-	ip_info = get_ip(req).clientIp;
+	ip_info = req.connection.remoteAddress;
 	logger.info(ip_info.toString().white.bold + ': ' + 'POST'.yellow.bold + ' request for ' + '/signup'.blue.bold);
 	db.insert_signup_mdb(req.body.email, req.body.name, req.body.pseudonym, req.body.passwd, ip_info, function(response_status){
 		if(response_status == statics.REGISTRATION_SUC){
@@ -67,7 +66,7 @@ router.post('/signup', function(req, res){
 // =================HOME PAGE===================
 // =============================================
 router.get('/', requireLogin, function(req, res){
-	ip_info = get_ip(req).clientIp;
+	ip_info = req.connection.remoteAddress;
 	logger.info(ip_info.toString().white.bold + ': ' + 'POST'.yellow.bold + ' request for ' + '/'.blue.bold);
 	res.render('home');
 });
@@ -80,7 +79,7 @@ router.get('/me', requireLogin, function(req, res){
 });
 
 router.get('/u/:pseudonym', requireLogin, function(req, res){
-	ip_info = get_ip(req).clientIp;
+	ip_info = req.connection.remoteAddress;
 	logger.info(ip_info.toString().white.bold + ': ' + 'GET'.yellow.bold + ' request for ' + ('/u/'+req.params.pseudonym).blue.bold);
 	db.find_user_by_pseudonym(req.params.pseudonym, ip_info, function(response_status, pseudo, id, em){
 		if(response_status == statics.ACCOUNT_NOT_FOUND){
@@ -95,7 +94,7 @@ router.get('/u/:pseudonym', requireLogin, function(req, res){
 			res.render('people', {
 				title: pagetitle, 
 				user: {pseudonym: pseudo, _id: id, email: em}, 
-				canEdit: req.ping_session.pseudonym == req.params.pseudonym
+				canEdit: req.ping_session.pseudonym == req.params.pseudonym // enable's the user to edit the profile if it's his own profile
 			});
 		}else{
 			logger.info('Something went wrong with the request for ' + ('/u/'+req.params.pseudonym).blue.bold);
@@ -109,7 +108,7 @@ router.get('/u/:pseudonym', requireLogin, function(req, res){
 // =============================================
 router.get('/logout', function(req, res){
 	if(req.ping_session._id){
-		logger.info(get_ip(req).clientIp.toString().white.bold + ': ' + req.ping_session._id.bgWhite.black.bold + ' (' + req.ping_session.pseudonym.bold.white + ') logged out.');
+		logger.info(req.connection.remoteAddress.toString().white.bold + ': ' + req.ping_session._id.bgWhite.black.bold + ' (' + req.ping_session.pseudonym.bold.white + ') logged out.');
 		req.ping_session.reset();
 	}
 	db.userlist_remove_user(req.ping_session.pseudonym);
@@ -120,7 +119,7 @@ router.get('/logout', function(req, res){
 // ===================SUBS======================
 // =============================================
 router.post('/newsub', requireLogin, function(req, res){
-	ip_info = get_ip(req).clientIp;
+	ip_info = req.connection.remoteAddress;
 	logger.info(ip_info.toString().white.bold + ': ' + 'POST'.yellow.bold + ' request for ' + '/newsub'.blue.bold);
 	db.insert_new_sub(req.body.name, req.ping_session._id, req.ping_session.pseudonym, ip_info, function(response_status){
 		if(response_status == statics.NEWSUB_SUC){
@@ -132,7 +131,7 @@ router.post('/newsub', requireLogin, function(req, res){
 });
 
 router.get('/fetchsubs', function(req, res){
-	ip_info = get_ip(req).clientIp;
+	ip_info = req.connection.remoteAddress;
 	//logger.info(ip_info.toString().white.bold + ': ' + 'GET'.yellow.bold + ' request for ' + '/fetchsubs'.blue.bold);
 	db.fetch_subs(req.ping_session.pseudonym, ip_info, function(response){
 		if(response == statics.ACCOUNT_NOT_FOUND){
@@ -149,7 +148,7 @@ router.get('/fetchsubs', function(req, res){
 // ===================POSTS=====================
 // =============================================
 router.post('/newpost', function(req, res){
-	ip_info = get_ip(req).clientIp;
+	ip_info = req.connection.remoteAddress;
 	logger.info(ip_info.toString().white.bold + ': ' + 'POST'.yellow.bold + ' request for ' + '/newpost'.blue.bold);
 	db.insert_new_post(req.ping_session.pseudonym, req.body.title, req.body.text, req.body.sub, ip_info, function(response){
 		if(response == statics.NEWPOST_SUC){

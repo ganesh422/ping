@@ -12,7 +12,6 @@ var statics = require('../utils/statics');
 var misc = require('../utils/misc');
 var crypto = require('crypto');
 var colors = require('colors');
-var get_ip = require('ipware')().get_ip;
 
 // store all the user's usernames
 var userlist =[];
