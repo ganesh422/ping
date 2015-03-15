@@ -9,7 +9,7 @@ var bodyParser   = require('body-parser');
 var session      = require('client-sessions');
 var fs           = require('fs');
 var logger       = require('./utils/logger');
-var sys          = require('sys');
+var util         = require('util');
 var domain       = require('domain');
 var cluster      = require('cluster');
 
