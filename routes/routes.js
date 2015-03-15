@@ -75,7 +75,18 @@ router.get('/', requireLogin, function(req, res){
 // =================PROFILES====================
 // =============================================
 router.get('/me', requireLogin, function(req, res){
-	res.render('people', {title: 'Your profile', user: req.ping_session, canEdit: true});
+	ip_info = req.connection.remoteAddress;
+	logger.info(ip_info.toString().white.bold + ': ' + 'GET'.yellow.bold + ' request for ' + ('/me').blue.bold);
+
+	//get user's posts
+	db.find_posts_by_pseudonym(req.ping_session.pseudonym, ip_info, function(response_status, p_l){
+		res.render('people', {
+			title: 'Your profile', 
+			user: req.ping_session,
+			posts: p_l, 
+			canEdit: req.ping_session.pseudonym == req.params.pseudonym // enable's the user to edit the profile if it's his own profile
+		});
+	});
 });
 
 router.get('/u/:pseudonym', requireLogin, function(req, res){
@@ -89,12 +100,21 @@ router.get('/u/:pseudonym', requireLogin, function(req, res){
 			if(req.ping_session.pseudonym == req.params.pseudonym){
 				pagetitle = 'Your profile';
 			}else{
-				pagetitle = req.params.pseudonym + "'s profile";
+				if(req.params.pseudonym[req.params.pseudonym.length-1] == 's'){
+					pagetitle = req.params.pseudonym + "' profile";
+				}else{
+					pagetitle = req.params.pseudonym + "'s profile";
+				}
 			}
-			res.render('people', {
-				title: pagetitle, 
-				user: {pseudonym: pseudo, _id: id, email: em}, 
-				canEdit: req.ping_session.pseudonym == req.params.pseudonym // enable's the user to edit the profile if it's his own profile
+
+			// get user's posts
+			db.find_posts_by_pseudonym(req.params.pseudonym, ip_info, function(response_status, p_l){
+				res.render('people', {
+					title: pagetitle, 
+					user: {pseudonym: pseudo, _id: id, email: em},
+					posts: p_l, 
+					canEdit: req.ping_session.pseudonym == req.params.pseudonym // enable's the user to edit the profile if it's his own profile
+				});
 			});
 		}else{
 			logger.info('Something went wrong with the request for ' + ('/u/'+req.params.pseudonym).blue.bold);

@@ -27,6 +27,8 @@ module.exports = {
 		userlist_remove_user(pseudonym);
 	}, find_user_by_pseudonym: function(pseudonym, ip, callback){
 		find_user_by_pseudonym(pseudonym, ip, callback);
+	}, find_posts_by_pseudonym: function(pseudonym, ip, callback){
+		find_posts_by_pseudonym(pseudonym, ip, callback);
 	}, insert_new_sub: function(name, id, admin, ip, callback){
 		insert_new_sub(name, id, admin, ip, callback);
 	}, fetch_subs: function(pseudonym, ip, callback){
@@ -168,9 +170,7 @@ function find_user_by_pseudonym(pseudonym, ip, returnData){
 	});
 
 	var query = User.findOne({'pseudonym': pseudonym});
-
 	query.select('_id pseudonym email');
-
 	query.exec(function(err, result){
 		if(err){
 			logger.error(err.toString().cyan.italic + '. Is ' + ' mongod '.red.bold + ' running?');
@@ -182,6 +182,28 @@ function find_user_by_pseudonym(pseudonym, ip, returnData){
 		}else{
 			logger.warn(ip.white.bold + ': query for user (credentials: ' + pseudonym.white + ') returned no result.');
 			returnData(statics.ACCOUNT_NOT_FOUND);
+		}
+	});
+}
+
+function find_posts_by_pseudonym(pseudonym, ip, returnData){
+	dbcon.on('error', function(err){
+		logger.error(err.toString().cyan.italic + '. Is ' + ' mongod '.red.bold + ' running?');
+        returnData(statics.INTERNAL_ERROR);
+	});
+
+	Post.find({'creators':pseudonym}).lean().exec(function(err, result){ //lean() returns the data as a JS object instead of mongoose object
+		if(err){
+			logger.error(err.toString().cyan.italic + '. Is ' + ' mongod '.red.bold + ' running?');
+        	returnData(statics.INTERNAL_ERROR);
+		}
+
+		if(result){
+			logger.info(ip.white.bold + ': query for posts by user (credentials: ' + pseudonym.white + ') returned ' + result.length + ' results.');
+			returnData(null, result.reverse()); // reverse to turn the whole array around
+		}else{
+			logger.warn(ip.white.bold + ': query for posts by user (credentials: ' + pseudonym.white + ') returned no results.');
+			returnData(statics.NO_POSTS_FOUND);
 		}
 	});
 }

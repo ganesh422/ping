@@ -18,6 +18,7 @@ var NEWSUB_SUC = 103;
 var NEWPOST_SUC = 104;
 var INVALID_WP = 'The password you entered is invalid.';
 var ACCOUNT_NOT_FOUND = 'There is no account with that e-mail/pseudonym.';
+var NO_POSTS_FOUND = 'There are no post created by this username';
 
 module.exports.INTERNAL_ERROR = INTERNAL_ERROR;
 module.exports.EMAILPSEUDO_IN_USE = EMAILPSEUDO_IN_USE;
@@ -30,6 +31,7 @@ module.exports.NEWSUB_SUC = NEWSUB_SUC;
 module.exports.NEWPOST_SUC = NEWPOST_SUC;
 module.exports.INVALID_WP = INVALID_WP;
 module.exports.ACCOUNT_NOT_FOUND = ACCOUNT_NOT_FOUND;
+module.exports.NO_POSTS_FOUND = NO_POSTS_FOUND;
 
 // PBKDF2 STATICS
 var ITERATIONS = 10000;

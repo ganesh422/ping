@@ -2,6 +2,10 @@ html
   head
     title #{title}
     link(rel='stylesheet', href='/components/bootstrap/bootstrap_paper.css')
+    script(src='/components/angular/angular.js')
+    script(src='/components/jquery/jquery.js')
+    script(src='/components/jquery/jquery-ui/jquery-ui.js')
+    script(src='/javascripts/misc.js')
     style.
       body{ padding-top:80px; word-wrap:break-word; }
   body
@@ -23,3 +27,13 @@ html
               strong pseudonym: #{user.pseudonym}
               br
               strong email: #{user.email}
+        .posts(ng-controller='PostController')
+          if posts
+            .col-sm-6
+              -for(var i in posts){
+                .well
+                  h4=posts[i].title
+                  p=posts[i].text
+                  p(style='float:right;')=posts[i].sub
+                  p(style='font-size: 10px;')=posts[i].date_created
+              -}
