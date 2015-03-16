@@ -29,6 +29,10 @@ module.exports = {
 		find_user_by_pseudonym(pseudonym, ip, callback);
 	}, find_posts_by_pseudonym: function(pseudonym, ip, callback){
 		find_posts_by_pseudonym(pseudonym, ip, callback);
+	}, find_posts_by_sub: function(subname, ip, callback){
+		find_posts_by_sub(subname, ip, callback);
+	}, find_posts_by_sublist: function(pseudonym, ip, callback){
+		find_posts_by_sublist(pseudonym, ip, callback);
 	}, insert_new_sub: function(name, id, admin, ip, callback){
 		insert_new_sub(name, id, admin, ip, callback);
 	}, fetch_subs: function(pseudonym, ip, callback){
@@ -75,7 +79,7 @@ function insert_signup_mdb(email, name, pseudonym, passwd, ip, returnData /*call
 		name: name,
 	    pseudonym: pseudonym,
 	    passwd: passwd,
-	    subs: 'All'
+	    subs: 'all'
 	});
 
 	newUser.save(function(err){
@@ -186,6 +190,9 @@ function find_user_by_pseudonym(pseudonym, ip, returnData){
 	});
 }
 
+/*
+ * get list of posts posted by the user
+ */
 function find_posts_by_pseudonym(pseudonym, ip, returnData){
 	dbcon.on('error', function(err){
 		logger.error(err.toString().cyan.italic + '. Is ' + ' mongod '.red.bold + ' running?');
@@ -204,6 +211,49 @@ function find_posts_by_pseudonym(pseudonym, ip, returnData){
 		}else{
 			logger.warn(ip.white.bold + ': query for posts by user (credentials: ' + pseudonym.white + ') returned no results.');
 			returnData(statics.NO_POSTS_FOUND);
+		}
+	});
+}
+
+function find_posts_by_sub(subname, ip, returnData){
+	dbcon.on('error', function(err){
+		logger.error(err.toString().cyan.italic + '. Is ' + ' mongod '.red.bold + ' running?');
+        returnData(statics.INTERNAL_ERROR);
+	});
+
+	Post.find({'sub': subname}).lean().exec(function(err, result){
+		if(err){
+			logger.error(err.toString().cyan.italic + '. Is ' + ' mongod '.red.bold + ' running?');
+        	returnData(statics.INTERNAL_ERROR);
+		}
+
+		if(result){
+			returnData(result.reverse());
+		}
+	});
+}
+
+/*
+ * get list of posts contained in subs the user subscribed to
+ */
+function find_posts_by_sublist(pseudonym, ip, returnData){
+	dbcon.on('error', function(err){
+		logger.error(err.toString().cyan.italic + '. Is ' + ' mongod '.red.bold + ' running?');
+        returnData(statics.INTERNAL_ERROR);
+	});
+
+	fetch_subs(pseudonym, ip, function(response){
+		if(response){
+			Post.find({'sub': {$in: response}}).lean().exec(function(err, result){
+				if(err){
+					logger.error(err.toString().cyan.italic + '. Is ' + ' mongod '.red.bold + ' running?');
+        			returnData(statics.INTERNAL_ERROR);
+				}
+
+				if(result){
+					returnData(result.reverse());
+				}
+			});
 		}
 	});
 }
@@ -239,7 +289,7 @@ function insert_new_sub(name, id, admin, ip, returnData){
             // add newly created sub to the creator's subs
             User.findByIdAndUpdate(
 		    	id,
-		    	{$push: {"subs": name}},
+		    	{$push: {"subs": name.toLowerCase()}},
 		    	{safe: true, upsert: true},
 		    	function(err, model) {
 		    		if(err){
