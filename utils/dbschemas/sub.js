@@ -5,9 +5,13 @@ var crypto = require('crypto');
 var Post = require('../dbschemas/post.js').Post;
 var User = require('../dbschemas/user.js').User;
 
+function toLower(str){
+    return str.toLowerCase();
+}
+
 /* COMMUNITY */
 var subSchema = Schema({
-	name: { type: String, required: true, unique: true },
+	name: { type: String, required: true, set: toLower, unique: true },
 	admins: [{ type:String, required: true }],
 	date_creation: { type: Date, default: Date.now },
 });

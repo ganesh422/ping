@@ -12,6 +12,10 @@ function generateId() {
     return crypto.randomBytes(64).toString('base64');
 }
 
+function toLower(str){
+    return str.toLowerCase();
+}
+
 /* POST */
 var postSchema = mongoose.Schema({
 	id: { type: String, default: generateId },
@@ -24,7 +28,7 @@ var postSchema = mongoose.Schema({
     	text: String
     ],*/
     /*sub: { type: ObjectId, ref: 'Sub' }*/
-    sub: { type: String, required: true },
+    sub: { type: String, set: toLower, required: true },
 	date_created: { type: Date, default: Date.now },
 });
 
