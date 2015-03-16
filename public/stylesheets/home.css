@@ -27,10 +27,17 @@ body{
     float: right;
 }
 
+#link_profile{
+    font-weight: bold;
+    float: right;
+    cursor: pointer;
+}
+
 #logo{
     width: 90px;
     height: 35px;
     float:left;
+    cursor: pointer;
 }
 
 #newpost{
