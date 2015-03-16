@@ -2,13 +2,17 @@ html
   head
     title #{title}
     link(rel='stylesheet', href='/components/bootstrap/bootstrap_paper.css')
+    link(rel='stylesheet', href='/stylesheets/people.css')
     script(src='/components/angular/angular.js')
     script(src='/components/jquery/jquery.js')
     script(src='/components/jquery/jquery-ui/jquery-ui.js')
     script(src='/javascripts/misc.js')
-    style.
-      body{ padding-top:80px; word-wrap:break-word; }
   body
+    .header
+      .header-content
+        img#logo(src='/images/ping_logo.png')
+        #container
+          p#link_home(onclick='window.location="/"') home
     .container
       .page-header.text-center
         h1
@@ -16,7 +20,7 @@ html
         if canEdit
           a.btn.btn-default.btn-sm(href='/logout') Logout
       .row
-        // LOCAL INFORMATION
+        //- LOCAL INFORMATION
         .col-sm-6
           .well
             h3
