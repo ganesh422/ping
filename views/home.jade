@@ -1,17 +1,17 @@
 html
   head
     meta(charset='utf8')
-    //color for chrome
+    //-color for chrome
     meta(name="theme-color" content="#ffffff")
     title Ping
-    //link(rel="shortcut icon" type="image/x-icon" href="favicon.ico")
+    //-link(rel="shortcut icon" type="image/x-icon" href="favicon.ico")
     link(rel='stylesheet', href='/components/bootstrap/bootstrap_paper.css')
     link(rel='stylesheet', href='/stylesheets/home.css')
     script(src='/components/angular/angular.js')
     script(src='/components/jquery/jquery.js')
     script(src='/components/jquery/jquery-ui/jquery-ui.js')
 
-    // javascript files
+    //- javascript files
     script(src='/javascripts/home/home.js')
     script(src='/javascripts/start.js')
     script(src='/javascripts/misc.js')
@@ -31,8 +31,9 @@ html
                 p#newsub create new sub
                 p#logout logout
                 p#errors
+                p#link_profile(onclick='window.location="/me"') #{user.pseudonym}
     center
-        #content(ng-app="content")
+        #contentcreation(ng-app="content")
             #newpostpanel(ng-controller="new_post")
                 input#input_title.form-control(type='text', placeholder="title" ng-model='title')
                 textarea#textinput.form-control.longInput(cols='30' ng-model="post_text" placeholder="what's on your mind?")
@@ -46,4 +47,14 @@ html
                 input#subnameinput.form-control(type="text" placeholder="enter the sub's new name..." maxlength="20" ng-model="sub_name")
                 br
                 button#submitsubbutton.btn.btn-success.btn-lg(type='submit' ng-click="submit()") Submit
-        
+        if posts
+            .col-sm-6#post_list_content(style='margin-top: 65px; float:center;')
+                -for(var i in posts){
+                    .well
+                        p(style='float:left; margin-top:0%; margin-bottom: 10px;')=posts[i].creators
+                        br
+                        h4=posts[i].title
+                        p=posts[i].text
+                        p(style='float:right;')=posts[i].sub
+                        p(style='font-size: 10px;')=posts[i].date_created
+                -}
