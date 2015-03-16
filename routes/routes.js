@@ -68,7 +68,7 @@ router.post('/signup', function(req, res){
 router.get('/', requireLogin, function(req, res){
 	ip_info = req.connection.remoteAddress;
 	logger.info(ip_info.toString().white.bold + ': ' + 'POST'.yellow.bold + ' request for ' + '/'.blue.bold);
-	db.find_posts_by_pseudonym(req.ping_session.pseudonym, ip_info, function(response_status, p_l){
+	db.find_posts_by_sublist(req.ping_session.pseudonym, ip_info, function(p_l){
 		res.render('home', {
 			user: req.ping_session, 
 			posts: p_l
@@ -89,7 +89,7 @@ router.get('/me', requireLogin, function(req, res){
 			title: 'Your profile', 
 			user: req.ping_session,
 			posts: p_l, 
-			canEdit: req.ping_session.pseudonym == req.params.pseudonym // enable's the user to edit the profile if it's his own profile
+			canEdit: true // enable's the user to edit the profile if it's his own profile
 		});
 	});
 });
@@ -166,6 +166,16 @@ router.get('/fetchsubs', function(req, res){
 		}else{
 			res.status(200).json({subs: response});
 		}
+	});
+});
+
+router.get('/s/:subname', function(req, res){
+	ip_info = req.connection.remoteAddress;
+	db.find_posts_by_sub(req.params.subname.toLowerCase(), ip_info, function(response){
+		res.render('home', {
+			user: req.ping_session, 
+			posts: response
+		});
 	});
 });
 
