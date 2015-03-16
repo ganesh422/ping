@@ -2,7 +2,7 @@ html
   head
     title Welcome to Ping!
     link(rel='stylesheet', href='/components/bootstrap/bootstrap_paper.css')
-    // load bootstrap css
+    //- load bootstrap css
     link(rel='stylesheet', href='stylesheets/welcome.css')
     script(src='/components/angular/angular.js')
     script(src='/components/jquery/jquery.js')
@@ -27,7 +27,7 @@ html
           h1
             span.fa.fa-sign-in Sign in
           #errors_signin.alert.alert-danger(ng-model='errors_signin')
-          // LOGIN FORM
+          //- LOGIN FORM
           form(ng-submit='signin()')
             .form-group
               label Email/Pseudonym
@@ -43,7 +43,7 @@ html
           h1
             span.fa.fa-sign-in Sign up
           #errors_signup.alert.alert-danger(ng-model='errors_signup')
-          // SIGNUP FORM
+          //- SIGNUP FORM
           form(ng-submit='signup()')
             .form-group
               label Email
