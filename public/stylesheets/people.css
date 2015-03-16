@@ -1,0 +1,32 @@
+body{ padding-top:40px; word-wrap:break-word; }
+
+/* TOP HEADER */
+.header {
+    width:100%;
+    position:fixed;
+    top:0px;
+    height:50px;
+    background:#ffffff;
+    box-shadow: 3px 3px 5px #888888;
+}
+
+.header-content{
+    margin: 10px;
+    
+}
+
+#container{
+    padding-top: 5px;
+}
+
+#logo{
+    width: 90px;
+    height: 35px;
+    float:left;
+    cursor: pointer;
+}
+
+#link_home{
+    float: right;
+    cursor: pointer;
+}
