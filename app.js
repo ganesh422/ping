@@ -13,6 +13,8 @@ var util         = require('util');
 var domain       = require('domain');
 var cluster      = require('cluster');
 
+require('events').EventEmitter.prototype._maxListeners = 100; // fix event memory leak
+
 // routes
 var routes = require('./routes/routes');
 
