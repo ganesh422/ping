@@ -83,12 +83,21 @@ function home_start(){
 
 	https_redirect();
 
-	$("#newsubpanel").hide();
+	$("#contentcreation").hide();
 }
 
 function set_home_click_listeners(){
+	$("#logo").bind("click", function(){
+		$("#contentcreation").hide();
+		$("#post_list_content").show();
+	});
+
 	$("#newpost").bind("click", function () {
-		if($("#newpostpanel").is(":visible")){
+		$("#post_list_content").hide();
+		$("#contentcreation").show();
+		$("#newsubpanel").hide();
+		$("#newpostpanel").show();
+		/*if($("#newpostpanel").is(":visible")){
 			//$("#newpostpanel").hide();
 		}else{
 			if($("#newsubpanel").is(":visible")){
@@ -96,11 +105,15 @@ function set_home_click_listeners(){
 			}
 			$(".input").val("");
 			$("#newpostpanel").show();
-		}
+		}*/
 	});
 
 	$("#newsub").bind("click", function(){
-		if($("#newsubpanel").is(":visible")){
+		$("#post_list_content").hide();
+		$("#contentcreation").show();
+		$("#newsubpanel").show();
+		$("#newpostpanel").hide();
+		/*if($("#newsubpanel").is(":visible")){
 			//
 		}else{
 			if($("#newpostpanel").is(":visible")){
@@ -108,7 +121,7 @@ function set_home_click_listeners(){
 				$(".input").val("");
 			}
 			$("#newsubpanel").show();
-		}
+		}*/
 	});
 
 	$("#logout").bind("click", function(){
