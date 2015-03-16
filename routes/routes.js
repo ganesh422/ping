@@ -68,7 +68,12 @@ router.post('/signup', function(req, res){
 router.get('/', requireLogin, function(req, res){
 	ip_info = req.connection.remoteAddress;
 	logger.info(ip_info.toString().white.bold + ': ' + 'POST'.yellow.bold + ' request for ' + '/'.blue.bold);
-	res.render('home');
+	db.find_posts_by_pseudonym(req.ping_session.pseudonym, ip_info, function(response_status, p_l){
+		res.render('home', {
+			user: req.ping_session, 
+			posts: p_l
+		});
+	});
 });
 
 // =============================================
