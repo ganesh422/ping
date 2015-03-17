@@ -206,7 +206,6 @@ function find_posts_by_pseudonym(pseudonym, ip, returnData){
 		}
 
 		if(result){
-			//logger.info(ip.white.bold + ': query for posts by user (credentials: ' + pseudonym.white + ') returned ' + result.length + ' results.');
 			returnData(null, result.reverse()); // reverse to turn the whole array around
 		}else{
 			logger.warn(ip.white.bold + ': query for posts by user (credentials: ' + pseudonym.white + ') returned no results.');

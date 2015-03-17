@@ -1,4 +1,4 @@
-html
+html(ng-app='ping_home')
   head
     meta(charset='utf8')
     //-color for chrome
@@ -25,7 +25,7 @@ html
   body
     .header
         .header-content
-            img#logo(src='/images/ping_logo.png')
+            img#logo(ng-controller='FeedCtrl' ng-click='refresh_feed()' src='/images/ping_logo.png')
             #container
                 p#newpost create new post
                 p#newsub create new sub
@@ -33,7 +33,7 @@ html
                 p#errors
                 p#link_profile(onclick='window.location="/me"') #{user.pseudonym}
     center
-        #contentcreation(ng-app="content")
+        #contentcreation
             #newpostpanel(ng-controller="new_post")
                 input#input_title.form-control(type='text', placeholder="title" ng-model='title')
                 textarea#textinput.form-control.longInput(cols='30' ng-model="post_text" placeholder="what's on your mind?")
@@ -47,14 +47,11 @@ html
                 input#subnameinput.form-control(type="text" placeholder="enter the sub's new name..." maxlength="20" ng-model="sub_name")
                 br
                 button#submitsubbutton.btn.btn-success.btn-lg(type='submit' ng-click="submit()") Submit
-        if posts
-            .col-sm-6#post_list_content(style='margin-top: 65px; float:center;')
-                -for(var i in posts){
-                    .well
-                        p(style='float:left; margin-top:0%; margin-bottom: 10px;')=posts[i].creators
-                        br
-                        h4=posts[i].title
-                        p=posts[i].text
-                        p(style='float:right;')=posts[i].sub
-                        p(style='font-size: 10px;')=posts[i].date_created
-                -}
+        .col-sm-6#post_list_content(ng-controller='FeedCtrl' style='margin-top: 65px; float:center;')
+                .well(ng-repeat='post in posts')
+                    p(style='float:left; margin-top:0%; margin-bottom: 10px;')='{{post.creators[0]}}'
+                    br
+                    h4='{{post.title}}'
+                    p='{{post.text}}'
+                    p(style='float:right;')='{{post.sub}}'
+                    p(style='font-size: 10px;')='{{post.date_created}}'

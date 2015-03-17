@@ -83,15 +83,14 @@ router.get('/me', requireLogin, function(req, res){
 	ip_info = req.connection.remoteAddress;
 	logger.info(ip_info.toString().white.bold + ': ' + 'GET'.yellow.bold + ' request for ' + ('/me').blue.bold);
 
-	//get user's posts
 	db.find_posts_by_pseudonym(req.ping_session.pseudonym, ip_info, function(response_status, p_l){
-		res.render('people', {
-			title: 'Your profile', 
-			user: req.ping_session,
-			posts: p_l, 
-			canEdit: true // enable's the user to edit the profile if it's his own profile
-		});
-	});
+        res.render('people', {
+            title: 'Your profile', 
+            user: req.ping_session,
+            posts: p_l, 
+            canEdit: true // enable's the user to edit the profile if it's his own profile
+        });
+    });
 });
 
 router.get('/u/:pseudonym', requireLogin, function(req, res){
@@ -191,6 +190,18 @@ router.post('/newpost', function(req, res){
 		}else{
 			res.status(403).json({status: response});
 		}
+	});
+});
+
+router.get('/getmyfeed', function(req, res){
+    ip_info = req.connection.remoteAddress;
+	logger.info(ip_info.toString().white.bold + ': ' + 'POST'.yellow.bold + ' request for ' + '/getposts'.blue.bold);
+    db.find_posts_by_sublist(req.ping_session.pseudonym, ip_info, function(p_l){
+		if(p_l){
+            res.status(200).json({posts: p_l});
+        }else{
+            res.status(403).json({error: statics.INTERNAL_ERROR});
+        }
 	});
 });
 
