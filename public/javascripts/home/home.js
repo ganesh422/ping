@@ -5,27 +5,33 @@ app.run(["$rootScope", "$http", function($rootScope, $http){
 }]);
 
 function update_feed($scope, $http){
-    $http.get("/getmyfeed").
-        success(function(data){
-            if(data){
-                if($scope.posts){
-                    console.log(data.posts.length + ' ' + $scope.posts.length);
-                    if(data.posts.length > $scope.posts.length){
-                        for(var i = 0; i <= data.posts.length - $scope.posts.length; i++){
-                            $scope.posts.unshift(data.posts[0]); //unshift to push to front
-                        }
+    var request = $http({
+        method: "post",
+        url: "/getposts",
+        data:{
+            selection: document.URL.split("/")[document.URL.split("/").length - 1]
+        }
+    });
+    
+    request.success(function(data){        
+        if(data){
+            if($scope.posts){
+                if(data.posts.length > $scope.posts.length){
+                    for(var i = 0; i <= data.posts.length - $scope.posts.length; i++){
+                        $scope.posts.unshift(data.posts[0]); //unshift to push to front
                     }
-                }else{
-                    console.log('lol');
-                    $scope.posts = data.posts;
                 }
+            }else{
+                $scope.posts = data.posts;
             }
-        }).
-        error(function(data){
-            if(data){
-                printError(data.error);
-            }
-        });
+        }
+    });
+    
+    request.error(function(data){
+        if(data){
+            printError(data.toString());
+        } 
+    });
 }
 
 app.controller("FeedCtrl",["$scope", "$http", function($scope, $http){

@@ -23,7 +23,7 @@ function requireLogin(req, res, next){
 // =============================================
 router.get('/welcome', function(req, res){
 	ip_info = req.connection.remoteAddress;
-	logger.info(ip_info.toString().white.bold + ': ' + 'GET'.yellow.bold + ' request for ' + '/welcome'.blue.bold);
+	logger.info(ip_info.toString().white.bold + ': ' + 'GET'.yellow.bold + '  request for ' + '/welcome'.blue.bold);
 
 	// if user is already logged in
 	// redirect to his profile
@@ -67,7 +67,7 @@ router.post('/signup', function(req, res){
 // =============================================
 router.get('/', requireLogin, function(req, res){
 	ip_info = req.connection.remoteAddress;
-	logger.info(ip_info.toString().white.bold + ': ' + 'POST'.yellow.bold + ' request for ' + '/'.blue.bold);
+	logger.info(ip_info.toString().white.bold + ': ' + 'GET'.yellow.bold + '  request for ' + '/'.blue.bold);
 	db.find_posts_by_sublist(req.ping_session.pseudonym, ip_info, function(p_l){
 		res.render('home', {
 			user: req.ping_session, 
@@ -81,7 +81,7 @@ router.get('/', requireLogin, function(req, res){
 // =============================================
 router.get('/me', requireLogin, function(req, res){
 	ip_info = req.connection.remoteAddress;
-	logger.info(ip_info.toString().white.bold + ': ' + 'GET'.yellow.bold + ' request for ' + ('/me').blue.bold);
+	logger.info(ip_info.toString().white.bold + ': ' + 'GET'.yellow.bold + '  request for ' + ('/me').blue.bold);
 
 	db.find_posts_by_pseudonym(req.ping_session.pseudonym, ip_info, function(response_status, p_l){
         res.render('people', {
@@ -95,7 +95,7 @@ router.get('/me', requireLogin, function(req, res){
 
 router.get('/u/:pseudonym', requireLogin, function(req, res){
 	ip_info = req.connection.remoteAddress;
-	logger.info(ip_info.toString().white.bold + ': ' + 'GET'.yellow.bold + ' request for ' + ('/u/'+req.params.pseudonym).blue.bold);
+	logger.info(ip_info.toString().white.bold + ': ' + 'GET'.yellow.bold + '  request for ' + ('/u/'+req.params.pseudonym).blue.bold);
 	db.find_user_by_pseudonym(req.params.pseudonym, ip_info, function(response_status, pseudo, id, em){
 		if(response_status == statics.ACCOUNT_NOT_FOUND){
 			res.render('error', {title: 'Oops!', errormessage: 'Oops!', message: 'There was no account found by that pseudonym!', canEdit: false});
@@ -172,8 +172,7 @@ router.get('/s/:subname', function(req, res){
 	ip_info = req.connection.remoteAddress;
 	db.find_posts_by_sub(req.params.subname.toLowerCase(), ip_info, function(response){
 		res.render('home', {
-			user: req.ping_session, 
-			posts: response
+			user: req.ping_session
 		});
 	});
 });
@@ -193,16 +192,27 @@ router.post('/newpost', function(req, res){
 	});
 });
 
-router.get('/getmyfeed', function(req, res){
+router.post('/getposts', function(req, res){
     ip_info = req.connection.remoteAddress;
 	logger.info(ip_info.toString().white.bold + ': ' + 'POST'.yellow.bold + ' request for ' + '/getposts'.blue.bold);
-    db.find_posts_by_sublist(req.ping_session.pseudonym, ip_info, function(p_l){
-		if(p_l){
-            res.status(200).json({posts: p_l});
-        }else{
-            res.status(403).json({error: statics.INTERNAL_ERROR});
-        }
-	});
+    
+    if(req.body.selection){
+        db.find_posts_by_sub(req.body.selection, ip_info, function(p_l){
+            if(p_l){
+                res.status(200).json({posts: p_l});
+            }else{
+                res.status(403).json({error: statics.INTERNAL_ERROR});
+            }
+        });
+    }else{
+        db.find_posts_by_sublist(req.ping_session.pseudonym, ip_info, function(p_l){
+            if(p_l){
+                res.status(200).json({posts: p_l});
+            }else{
+                res.status(403).json({error: statics.INTERNAL_ERROR});
+            }
+        });
+    }
 });
 
 // =============================================
