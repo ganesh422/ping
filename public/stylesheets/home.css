@@ -11,6 +11,7 @@ body{
     height:50px;
     background:#ffffff;
     box-shadow: 1px 1px 5px #888888;
+    transition: top 0.2s ease-in-out;
 }
 
 .header-content{
