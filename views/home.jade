@@ -35,8 +35,8 @@ html(ng-app='ping_home')
     center
         #contentcreation
             #newpostpanel(ng-controller="new_post")
-                input#input_title.form-control(type='text', placeholder="title" ng-model='title')
-                textarea#textinput.form-control.longInput(cols='30' ng-model="post_text" placeholder="what's on your mind?")
+                input#input_title.form-control(type='text' placeholder="title (max. 140)" maxlength="140" ng-model='title')
+                textarea#textinput.form-control.longInput(cols='30' maxlength="2000" ng-model="post_text" placeholder="what's on your mind? (max. 2000)")
                 br
                 #postpanelbottom(ng-controller="sub_fetch" ng-init="init()")
                     select#subselect.form-control(ng-click="init()")
@@ -49,9 +49,9 @@ html(ng-app='ping_home')
                 button#submitsubbutton.btn.btn-success.btn-lg(type='submit' ng-click="submit()") Submit
         .col-sm-6#post_list_content(ng-controller='FeedCtrl' style='margin-top: 65px; float:center;')
                 .well(ng-repeat='post in posts')
-                    p(style='float:left; margin-top:0%; margin-bottom: 10px;')='{{post.creators[0]}}'
+                    p#post_tag_creator(style='float:left; margin-top:0%; margin-bottom: 10px; cursor: pointer;' ng-click="post_pseudonym_click()")='{{post.creators[0]}}'
                     br
                     h4='{{post.title}}'
                     p='{{post.text}}'
-                    p(style='float:right;')='{{post.sub}}'
+                    p#post_tag_sub(style='float:right; cursor:pointer;' ng-click="post_sub_click()")='{{post.sub}}'
                     p(style='font-size: 10px;')='{{post.date_created}}'
