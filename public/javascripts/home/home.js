@@ -38,6 +38,14 @@ app.controller("FeedCtrl",["$scope", "$http", function($scope, $http){
     $scope.refresh_feed = function(){
         update_feed($scope, $http);
     };
+    
+    $scope.post_pseudonym_click = function(){
+        window.location = ("/u/" + $("#post_tag_creator").text());
+    }
+    
+    $scope.post_sub_click = function(){
+        window.location = ("/s/" + $("#post_tag_sub").text());
+    }
 }]);
 
 // newpost controller
