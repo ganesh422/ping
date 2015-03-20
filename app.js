@@ -12,6 +12,7 @@ var logger       = require('./utils/logger');
 var util         = require('util');
 var domain       = require('domain');
 var cluster      = require('cluster');
+var config       = require('./config');
 
 require('events').EventEmitter.prototype._maxListeners = 100; // fix event memory leak
 
@@ -24,10 +25,6 @@ var routes = require('./routes/routes');
 
 var http_server;
 var https_server;
-
-// port variables
-var http_port = process.env.port || 1337;
-var https_port = process.env.port || 1338;
 
 var privateKey  = fs.readFileSync('./sslcert/key.pem');
 var certificate = fs.readFileSync('./sslcert/cert.pem');
@@ -91,11 +88,11 @@ app.use(favicon(__dirname + '/public/favicon.ico'));
 
 // session cookies
 var auth_session = session({
-    cookieName: 'ping_session', 
-    requestKey: 'ping_session', /*overrides cookieName for the key name added to the request object*/ 
-    secret: 'pingisloveislife', 
-    duration: 2*60*60*1000 /*2 hours*/,
-    activeDuration: 1*60*60*1000, /*if the client performs an action within 1 hour, the cookie will live for another 2 hours*/
+    cookieName: config.userCookie.name, 
+    requestKey: config.userCookie.key, /*overrides cookieName for the key name added to the request object*/ 
+    secret: config.userCookie.secret, 
+    duration: config.userCookie.defaultLifeTime /*2 hours*/,
+    activeDuration: config.userCookie.defaultActiveLifeTime, /*if the client performs an action within 1 hour, the cookie will live for another 2 hours*/
     httpOnly: true, /*client side js can not access the cookie*/
     secure: true/*,
     ephemeral: true /*cookie gets deleted when browser is closed*/
@@ -170,10 +167,10 @@ function start(){
             throw new Error('error at starting http/https server');
         });
         d.run(function(){
-            http_server = http.createServer(app).listen(http_port);
-            logger.info(('HTTP Server started on port ' + http_port).magenta.bold);
-            https_server = https.createServer(options, app).listen(https_port);
-            logger.info(('HTTPS Server started on port ' + https_port).magenta.bold);
+            http_server = http.createServer(app).listen(config.http.port);
+            logger.info(('HTTP Server started on port ' + config.http.port).magenta.bold);
+            https_server = https.createServer(options, app).listen(config.https.port);
+            logger.info(('HTTPS Server started on port ' + config.https.port).magenta.bold);
         });
     }
 

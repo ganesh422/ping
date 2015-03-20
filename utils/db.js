@@ -12,6 +12,7 @@ var statics = require('../utils/statics');
 var misc = require('../utils/misc');
 var crypto = require('crypto');
 var colors = require('colors');
+var config = require('../config');
 
 // store all the user's usernames
 var userlist =[];
@@ -48,7 +49,7 @@ module.exports.user_list = userlist;
  * mongoDB dependencies
  */
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/pingdb', {server:{poolSize: 5}});
+mongoose.connect('mongodb://localhost/pingdb', {server:{poolSize: config.mongodb.defaultPoolSize}});
 logger.debug('connected to mongodb.');
 var dbcon = mongoose.connection;
 
