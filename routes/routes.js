@@ -26,7 +26,7 @@ router.get('/welcome', function(req, res){
 	logger.info(ip_info.toString().white.bold + ': ' + 'GET'.yellow.bold + '  request for ' + '/welcome'.blue.bold);
 
 	// if user is already logged in
-	// redirect to his profile
+	// redirect to his/her profile
 	if(req.user._id){
 		logger.info(ip_info.toString().white.bold + ': ' + req.user._id.bgWhite.black.bold + ' (' + req.user.pseudonym + ') was redirected to /people/me.');
 		res.redirect('/people/me');
@@ -88,7 +88,7 @@ router.get('/me', requireLogin, function(req, res){
             title: 'Your profile', 
             user: req.user,
             posts: p_l, 
-            canEdit: true // enable's the user to edit the profile if it's his own profile
+            canEdit: true
         });
     });
 });
@@ -117,7 +117,7 @@ router.get('/u/:pseudonym', requireLogin, function(req, res){
 					title: pagetitle, 
 					user: {pseudonym: pseudo, _id: id, email: em},
 					posts: p_l, 
-					canEdit: req.user.pseudonym == req.params.pseudonym // enable's the user to edit the profile if it's his own profile
+					canEdit: req.user.pseudonym == req.params.pseudonym
 				});
 			});
 		}else{
@@ -156,7 +156,6 @@ router.post('/newsub', requireLogin, function(req, res){
 
 router.get('/fetchsubs', function(req, res){
 	ip_info = req.connection.remoteAddress;
-	//logger.info(ip_info.toString().white.bold + ': ' + 'GET'.yellow.bold + ' request for ' + '/fetchsubs'.blue.bold);
 	db.fetch_subs(req.user.pseudonym, ip_info, function(response){
 		if(response == statics.ACCOUNT_NOT_FOUND){
 			res.status(403).json({status: response});
