@@ -16,5 +16,12 @@ module.exports = {
 		defaultActiveLifeTime: 1*60*60*1000,
 		name: 'user',
 		key: 'user'
+	},
+	sessionCookie: {
+		secret: 'thisispinghistory',
+		defaultLifeTime: 4*60*60*1000,
+		defaultActiveLifeTime: 2*60*60*10000,
+		name: 'session',
+		key: 'session'
 	}
 }

@@ -68,6 +68,7 @@ router.post('/signup', function(req, res){
 router.get('/', requireLogin, function(req, res){
 	ip_info = req.connection.remoteAddress;
 	logger.info(ip_info.toString().white.bold + ': ' + 'GET'.yellow.bold + '  request for ' + '/'.blue.bold);
+	req.session.lastPage = '/';
 	db.find_posts_by_sublist(req.user.pseudonym, ip_info, function(p_l){
 		res.render('home', {
 			user: req.user, 
@@ -82,7 +83,7 @@ router.get('/', requireLogin, function(req, res){
 router.get('/me', requireLogin, function(req, res){
 	ip_info = req.connection.remoteAddress;
 	logger.info(ip_info.toString().white.bold + ': ' + 'GET'.yellow.bold + '  request for ' + ('/me').blue.bold);
-
+	req.session.lastPage = '/me';
 	db.find_posts_by_creator_pseudonym(req.user.pseudonym, ip_info, function(response_status, p_l){
         res.render('people', {
             title: 'Your profile', 
@@ -96,6 +97,7 @@ router.get('/me', requireLogin, function(req, res){
 router.get('/u/:pseudonym', requireLogin, function(req, res){
 	ip_info = req.connection.remoteAddress;
 	logger.info(ip_info.toString().white.bold + ': ' + 'GET'.yellow.bold + '  request for ' + ('/u/'+req.params.pseudonym).blue.bold);
+	req.session.lastPage = '/u/' + req.params.pseudonym;
 	db.find_user_by_creator_pseudonym(req.params.pseudonym, ip_info, function(response_status, pseudo, id, em){
 		if(response_status == statics.ACCOUNT_NOT_FOUND){
 			res.render('error', {title: 'Oops!', errormessage: 'Oops!', message: 'There was no account found by that pseudonym!', canEdit: false});
@@ -134,6 +136,7 @@ router.get('/logout', function(req, res){
 	if(req.user._id){
 		logger.info(req.connection.remoteAddress.toString().white.bold + ': ' + req.user._id.bgWhite.black.bold + ' (' + req.user.pseudonym.bold.white + ') logged out.');
 		req.user.reset();
+		req.session.reset();
 	}
 	db.userlist_remove_user(req.user.pseudonym);
 	res.redirect('/welcome');
@@ -169,6 +172,7 @@ router.get('/fetchsubs', function(req, res){
 
 router.get('/s/:subname', function(req, res){
 	ip_info = req.connection.remoteAddress;
+	req.session.lastPage = '/s/' + req.params.subname;
 	db.find_posts_by_sub(req.params.subname.toLowerCase(), ip_info, function(response){
 		res.render('home', {
 			user: req.user
@@ -193,7 +197,6 @@ router.post('/newpost', function(req, res){
 
 router.post('/getposts', function(req, res){
     ip_info = req.connection.remoteAddress;
-	logger.info(ip_info.toString().white.bold + ': ' + 'POST'.yellow.bold + ' request for ' + '/getposts'.blue.bold);
     
     if(req.body.selection){
         db.find_posts_by_sub(req.body.selection, ip_info, function(p_l){

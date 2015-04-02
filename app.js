@@ -86,7 +86,7 @@ app.set('development', function () { app.locals.pretty = true; });
 // uncomment after placing your favicon in /public
 app.use(favicon(__dirname + '/public/favicon.ico'));
 
-// session cookies
+// authentication cookies
 var auth_session = session({
     cookieName: config.userCookie.name, 
     requestKey: config.userCookie.key, /*overrides cookieName for the key name added to the request object*/ 
@@ -96,6 +96,17 @@ var auth_session = session({
     httpOnly: true, /*client side js can not access the cookie*/
     secure: true/*,
     ephemeral: true /*cookie gets deleted when browser is closed*/
+});
+
+var hist_session = session({
+    cookieName: config.sessionCookie.name,
+    requestKey: config.sessionCookie.key,
+    secret: config.sessionCookie.secret,
+    duration: config.sessionCookie.defaultLifeTime,
+    activeDuration: config.sessionCookie.defaultActiveLifeTime,
+    httpOnly: true,
+    secure: true,
+    ephemeral: true
 });
 
 app.use(bodyParser.json());
