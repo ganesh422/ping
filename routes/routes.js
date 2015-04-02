@@ -83,7 +83,7 @@ router.get('/me', requireLogin, function(req, res){
 	ip_info = req.connection.remoteAddress;
 	logger.info(ip_info.toString().white.bold + ': ' + 'GET'.yellow.bold + '  request for ' + ('/me').blue.bold);
 
-	db.find_posts_by_pseudonym(req.user.pseudonym, ip_info, function(response_status, p_l){
+	db.find_posts_by_creator_pseudonym(req.user.pseudonym, ip_info, function(response_status, p_l){
         res.render('people', {
             title: 'Your profile', 
             user: req.user,
@@ -96,7 +96,7 @@ router.get('/me', requireLogin, function(req, res){
 router.get('/u/:pseudonym', requireLogin, function(req, res){
 	ip_info = req.connection.remoteAddress;
 	logger.info(ip_info.toString().white.bold + ': ' + 'GET'.yellow.bold + '  request for ' + ('/u/'+req.params.pseudonym).blue.bold);
-	db.find_user_by_pseudonym(req.params.pseudonym, ip_info, function(response_status, pseudo, id, em){
+	db.find_user_by_creator_pseudonym(req.params.pseudonym, ip_info, function(response_status, pseudo, id, em){
 		if(response_status == statics.ACCOUNT_NOT_FOUND){
 			res.render('error', {title: 'Oops!', errormessage: 'Oops!', message: 'There was no account found by that pseudonym!', canEdit: false});
 		}else if(pseudo != undefined && id != undefined && em != undefined){

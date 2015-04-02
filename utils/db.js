@@ -28,8 +28,8 @@ module.exports = {
 		userlist_remove_user(pseudonym);
 	}, find_user_by_pseudonym: function(pseudonym, ip, callback){
 		find_user_by_pseudonym(pseudonym, ip, callback);
-	}, find_posts_by_pseudonym: function(pseudonym, ip, callback){
-		find_posts_by_pseudonym(pseudonym, ip, callback);
+	}, find_posts_by_creator_pseudonym: function(pseudonym, ip, callback){
+		find_posts_by_creator_pseudonym(pseudonym, ip, callback);
 	}, find_posts_by_sub: function(subname, ip, callback){
 		find_posts_by_sub(subname, ip, callback);
 	}, find_posts_by_sublist: function(pseudonym, ip, callback){
@@ -194,7 +194,7 @@ function find_user_by_pseudonym(pseudonym, ip, returnData){
 /*
  * get list of posts posted by the user
  */
-function find_posts_by_pseudonym(pseudonym, ip, returnData){
+function find_posts_by_creator_pseudonym(pseudonym, ip, returnData){
 	dbcon.on('error', function(err){
 		logger.error(err.toString().cyan.italic + '. Is ' + ' mongod '.red.bold + ' running?');
         returnData(statics.INTERNAL_ERROR);
