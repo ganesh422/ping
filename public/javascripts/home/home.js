@@ -136,8 +136,7 @@ function home_start(){
 
 function set_home_click_listeners(){
 	$("#logo").bind("click", function(){
-		$("#contentcreation").hide();
-		$("#post_list_content").show();
+		window.location = "/";
 	});
 
 	$("#newpost").bind("click", function () {
@@ -145,15 +144,6 @@ function set_home_click_listeners(){
 		$("#contentcreation").show();
 		$("#newsubpanel").hide();
 		$("#newpostpanel").show();
-		/*if($("#newpostpanel").is(":visible")){
-			//$("#newpostpanel").hide();
-		}else{
-			if($("#newsubpanel").is(":visible")){
-				$("#newsubpanel").hide();
-			}
-			$(".input").val("");
-			$("#newpostpanel").show();
-		}*/
 	});
 
 	$("#newsub").bind("click", function(){
@@ -161,15 +151,6 @@ function set_home_click_listeners(){
 		$("#contentcreation").show();
 		$("#newsubpanel").show();
 		$("#newpostpanel").hide();
-		/*if($("#newsubpanel").is(":visible")){
-			//
-		}else{
-			if($("#newpostpanel").is(":visible")){
-				$("#newpostpanel").hide();
-				$(".input").val("");
-			}
-			$("#newsubpanel").show();
-		}*/
 	});
 
 	$("#logout").bind("click", function(){
