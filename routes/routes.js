@@ -89,7 +89,8 @@ router.get('/me', requireLogin, function(req, res){
             title: 'Your profile', 
             user: req.user,
             posts: p_l, 
-            canEdit: true
+            canEdit: true,
+            canFollow: false
         });
     });
 });
@@ -98,7 +99,7 @@ router.get('/u/:pseudonym', requireLogin, function(req, res){
 	ip_info = req.connection.remoteAddress;
 	logger.info(ip_info.toString().white.bold + ': ' + 'GET'.yellow.bold + '  request for ' + ('/u/'+req.params.pseudonym).blue.bold);
 	req.session.lastPage = '/u/' + req.params.pseudonym;
-	db.find_user_by_creator_pseudonym(req.params.pseudonym, ip_info, function(response_status, pseudo, id, em){
+	db.find_user_by_pseudonym(req.params.pseudonym, ip_info, function(response_status, pseudo, id, em){
 		if(response_status == statics.ACCOUNT_NOT_FOUND){
 			res.render('error', {title: 'Oops!', errormessage: 'Oops!', message: 'There was no account found by that pseudonym!', canEdit: false});
 		}else if(pseudo != undefined && id != undefined && em != undefined){
@@ -107,24 +108,37 @@ router.get('/u/:pseudonym', requireLogin, function(req, res){
 				pagetitle = 'Your profile';
 			}else{
 				if(req.params.pseudonym[req.params.pseudonym.length-1] == 's'){
-					pagetitle = req.params.pseudonym + "' profile";
+					pagetitle = req.params.pseudonym;
 				}else{
-					pagetitle = req.params.pseudonym + "'s profile";
+					pagetitle = req.params.pseudonym;
 				}
 			}
 
 			// get user's posts
-			db.find_posts_by_pseudonym(req.params.pseudonym, ip_info, function(response_status, p_l){
+			db.find_posts_by_creator_pseudonym(req.params.pseudonym, ip_info, function(response_status, p_l){
 				res.render('people', {
 					title: pagetitle, 
 					user: {pseudonym: pseudo, _id: id, email: em},
 					posts: p_l, 
-					canEdit: req.user.pseudonym == req.params.pseudonym
+					canEdit: req.user.pseudonym == req.params.pseudonym,
+					canFollow: true
 				});
 			});
 		}else{
 			logger.info('Something went wrong with the request for ' + ('/u/'+req.params.pseudonym).blue.bold);
 			res.render('error', {title: 'Oops!', errormessage: 'Something went wrong. Sorry.', canEdit: false});
+		}
+	});
+});
+
+router.post('/follow/:pseudonym', function(req, res){
+	ip_info = req.connection.remoteAddress;
+	logger.info(ip_info.toString().white.bold + ': ' + 'POST'.yellow.bold + ' request for ' + ('/follow/'+req.params.pseudonym).blue.bold);
+	db.follow(req.user.pseudonym, req.params.pseudonym, ip_info, function(response){
+		if(response == statics.FOLLOW_SUC){
+			res.status(200).json({status: 'You started following ' + req.params.pseudonym});
+		}else{
+			res.status(400).json({status: response});
 		}
 	});
 });
@@ -148,7 +162,7 @@ router.get('/logout', function(req, res){
 router.post('/newsub', requireLogin, function(req, res){
 	ip_info = req.connection.remoteAddress;
 	logger.info(ip_info.toString().white.bold + ': ' + 'POST'.yellow.bold + ' request for ' + '/newsub'.blue.bold);
-	db.insert_new_sub(req.body.name, req.user._id, req.user.pseudonym, ip_info, function(response_status){
+	db.insert_new_sub(req.body.name, req.user.pseudonym, ip_info, function(response_status){
 		if(response_status == statics.NEWSUB_SUC){
 			res.status(200).json({status: response_status});
 		}else{

@@ -11,34 +11,39 @@ var logger = require('../utils/logger');
 var statics = require('../utils/statics');
 var misc = require('../utils/misc');
 var crypto = require('crypto');
-var colors = require('colors');
 var config = require('../config');
 
 // store all the user's usernames
 var userlist =[];
 
 module.exports = {
-	insert_signup_mdb: function(email, name, pseudonym, passwd, ip, callback){
+	insert_signup_mdb: function(email, name, pseudonym, passwd, ip, callback){ // register using mongodb
 		insert_signup_mdb(email, name, pseudonym, passwd, ip, callback);
-	}, login_mdb: function(emailpseudonym, passwd, ip, callback){
+	}, login_mdb: function(emailpseudonym, passwd, ip, callback){ // login using mongodb
 		login_mdb(emailpseudonym, passwd, ip, callback);
-	}, userlist_add_user: function(pseudonym){
+	}, userlist_add_user: function(pseudonym){ // show a new user online
 		userlist_add_user(pseudonym);
-	}, userlist_remove_user: function(pseudonym){
+	}, userlist_remove_user: function(pseudonym){ // remove a user from the list of online people
 		userlist_remove_user(pseudonym);
-	}, find_user_by_pseudonym: function(pseudonym, ip, callback){
+	}, find_user_by_pseudonym: function(pseudonym, ip, callback){ // basic information about the user using the pseudonym
 		find_user_by_pseudonym(pseudonym, ip, callback);
-	}, find_posts_by_creator_pseudonym: function(pseudonym, ip, callback){
+	}, find_posts_by_creator_pseudonym: function(pseudonym, ip, callback){ // fetch the posts a certain pseudonym created
 		find_posts_by_creator_pseudonym(pseudonym, ip, callback);
-	}, find_posts_by_sub: function(subname, ip, callback){
+	}, find_posts_by_sub: function(subname, ip, callback){ // find posts for a specific community
 		find_posts_by_sub(subname, ip, callback);
-	}, find_posts_by_sublist: function(pseudonym, ip, callback){
+	}, find_posts_by_sublist: function(pseudonym, ip, callback){ // find posts by the user's list of communities
 		find_posts_by_sublist(pseudonym, ip, callback);
-	}, insert_new_sub: function(name, id, admin, ip, callback){
-		insert_new_sub(name, id, admin, ip, callback);
-	}, fetch_subs: function(pseudonym, ip, callback){
+	}, find_posts_by_friendlist: function(pseudonym, ip, callback){
+		find_posts_by_friendlist(pseudonym, ip, callback);
+	}, find_posts_by_pseudonym: function(pseudonym, ip, callback){ // find posts for a user (communities, followed people)
+		find_posts_by_pseudonym(pseudonym, ip, callback)
+	}, follow: function(senderpseudonym, whouserwantstofollow, ip, callback){
+		follow(senderpseudonym, whouserwantstofollow, ip, callback);
+	}, insert_new_sub: function(name, admin, ip, callback){ // create a new community
+		insert_new_sub(name, admin, ip, callback);
+	}, fetch_subs: function(pseudonym, ip, callback){ // get the list of communities the user followed
 		fetch_subs(pseudonym, ip, callback);
-	}, insert_new_post: function(creator, title, text, sub, ip, callback){
+	}, insert_new_post: function(creator, title, text, sub, ip, callback){ // create a new post
 		insert_new_post(creator, title, text, sub, ip, callback);
 	}
 };
@@ -54,9 +59,9 @@ logger.debug('connected to mongodb.');
 var dbcon = mongoose.connection;
 
 // schemas
-var User = require('../utils/dbschemas/user.js').User;
-var Sub = require('../utils/dbschemas/sub.js').Sub;
-var Post = require('../utils/dbschemas/post.js').Post;
+var User = require('../utils/dbmodels/user.js').User;
+var Sub = require('../utils/dbmodels/sub.js').Sub;
+var Post = require('../utils/dbmodels/post.js').Post;
 
 
 // =============================================
@@ -258,10 +263,70 @@ function find_posts_by_sublist(pseudonym, ip, returnData){
 	});
 }
 
+/*function find_posts_by_friendlist(pseudonym, ip, returnData){
+	dbcon.on('error', function(err){
+		logger.error(err.toString().cyan.italic + '. Is ' + ' mongod '.red.bold + ' running?');
+        returnData(statics.INTERNAL_ERROR);
+	});
+
+	User.findOne({'pseudonym': pseudonym}).select('friends').exec(function(err, result){
+		if(err){
+			logger.error(err.toString().cyan.italic + '. Is ' + ' mongod '.red.bold + ' running?');
+        	returnData(statics.INTERNAL_ERROR);
+		}
+
+		if(result){
+			logger.debug(result.friends);
+
+			var postlist_followed = [];
+
+			for(i in result){
+				find_posts_by_creator_pseudonym(result[i], ip, function(status, response){
+					for(j in response){
+						postlist_followed.push(reponse[j]);
+					}
+				});
+			}
+
+			console.log(postlist_followed);
+		}else{
+		}
+	});
+}
+
+function find_posts_by_pseudonym(pseudonym, ip, returnData){
+	dbcon.on('error', function(err){
+		logger.error(err.toString().cyan.italic + '. Is ' + ' mongod '.red.bold + ' running?');
+        returnData(statics.INTERNAL_ERROR);
+	});
+
+	find_posts_by_sublist(pseudonym, ip, function(response){
+		if(response){
+
+		}
+	});
+}*/
+
+function follow(senderpseudonym, whouserwantstofollow, ip, returnData){
+	dbcon.on('error', function(err){
+		logger.error(err.toString().cyan.italic + '. Is ' + ' mongod '.red.bold + ' running?');
+        returnData(statics.INTERNAL_ERROR);
+	});
+
+	User.findAndModify({'pseudonym': senderpseudonym}, [], {$addToSet: {'friends': whouserwantstofollow}}, {}, function(err){
+		if(err){
+			logger.error(err.toString());
+			returnData(statics.INTERNAL_ERROR);
+		}else{
+			returnData(statics.FOLLOW_SUC);
+		}
+	});
+}
+
 // =============================================
 // ============SUB RELATED FUNCTIONS============
 // =============================================
-function insert_new_sub(name, id, admin, ip, returnData){
+function insert_new_sub(name, admin, ip, returnData){
 	dbcon.on('error', function(err){
 		logger.error(err.toString().cyan.italic + '. Is ' + ' mongod '.red.bold + ' running?');
         returnData(result_status = statics.INTERNAL_ERROR);
@@ -287,18 +352,15 @@ function insert_new_sub(name, id, admin, ip, returnData){
             // successful
 
             // add newly created sub to the creator's subs
-            User.findByIdAndUpdate(
-		    	id,
-		    	{$push: {"subs": name.toLowerCase()}},
-		    	{safe: true, upsert: true},
-		    	function(err, model) {
-		    		if(err){
-		        		logger.error(err.toString());
-		        	}
-		    	}
+			User.findAndModify({'pseudonym': admin}, [], {$addToSet: {'subs': name}}, {}, function(err){
+					if(err){
+						logger.error(err.toString());
+					}else{
+						logger.info(ip.white.bold + ': new sub ' + name.white.bold + ' with admin ' + admin.white.bold + ' created!');
+						returnData(statics.NEWSUB_SUC);
+					}
+				}
 			);
-            logger.info(ip.white.bold + ': new sub ' + name.white.bold + ' with admin ' + admin.white.bold + ' created!');
-            returnData(statics.NEWSUB_SUC);
         }
 	});
 }
