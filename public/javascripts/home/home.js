@@ -41,11 +41,11 @@ app.controller("FeedCtrl",["$scope", "$http", function($scope, $http){
     
     $scope.post_pseudonym_click = function(){
         window.location = ("/u/" + $("#post_tag_creator").text());
-    }
+    };
     
     $scope.post_sub_click = function(){
         window.location = ("/s/" + $("#post_tag_sub").text());
-    }
+    };
 }]);
 
 // newpost controller
@@ -62,14 +62,14 @@ app.controller("new_post", function($scope, $http){
 		});
 
 		request.success(function(data){
-			if(data.postCreated){
-				window.location = "/home";
+			if(data.status){
+				window.location = "/";
 			}
 		});
 
 		request.error(function(data){
-			if(data.errorHappened){
-				printError("couldn't create post. error.");
+			if(data.status){
+				alert(data.status);
 			}
 		});
 	}
@@ -87,7 +87,7 @@ app.controller("new_sub", function($scope, $http){
 
 		request.success(function(data){
 			if(data.status == 103){
-				alert("Community created");
+				window.location = "/";
 			}
 		});
 
