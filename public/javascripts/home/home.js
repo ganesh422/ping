@@ -1,4 +1,4 @@
-var app = angular.module("ping_home", []);
+var app = angular.module("home", []);
 
 app.run(["$rootScope", "$http", function($rootScope, $http){
     update_feed($rootScope, $http);
@@ -123,9 +123,9 @@ app.controller("sub_fetch", function($scope, $http){
 
 function home_start(){
 	$('textarea').on('keyup',function(){
-	  var spanwidth = $('span').css('width')
+	  var spanwidth = $('span').css('width');
 	  $('textarea').css('width',spanwidth) 
-	})
+	});
 
 	set_home_click_listeners();
 
