@@ -1,4 +1,6 @@
 /node_modules
 /public/components
 /sslcert
+/.idea
 npm-debug.log
+*.xml
