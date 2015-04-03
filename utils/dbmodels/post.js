@@ -2,8 +2,8 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = ObjectId = Schema.ObjectId;
 var crypto = require('crypto');
-var User = require('../dbschemas/user').User;
-var Sub = require('../dbschemas/sub').Sub;
+var User = require('../dbmodels/user').User;
+var Sub = require('../dbmodels/sub').Sub;
 
 /* used to generate a random id for each post
  * because the normal mongodb id would be too short to be unique forever

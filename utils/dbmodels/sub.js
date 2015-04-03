@@ -2,8 +2,8 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = ObjectId = Schema.ObjectId;
 var crypto = require('crypto');
-var Post = require('../dbschemas/post.js').Post;
-var User = require('../dbschemas/user.js').User;
+var Post = require('../dbmodels/post.js').Post;
+var User = require('../dbmodels/user.js').User;
 
 function toLower(str){
     return str.toLowerCase();

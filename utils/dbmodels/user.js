@@ -57,10 +57,15 @@ var UserSchema = mongoose.Schema({
     subs: [{type: String, required: true}]
 },{ strict: true });
 
+// exposed method to update fields
+UserSchema.statics.findAndModify = function (query, sort, doc, options, callback) {
+    return this.collection.findAndModify(query, sort, doc, options, callback);
+};
+
 // create model of user schema
 User = mongoose.model('User', UserSchema);
 
-// make sure pseudonym is unique (unique keyword above doesn't work)
+// make sure pseudonym is unique
 User.schema.path('email').validate(function (value, respond) {                                                                                           
     User.findOne({ email: value }, function (err, user) {                                                                                                
         if(user){
@@ -71,7 +76,7 @@ User.schema.path('email').validate(function (value, respond) {
     });                                                                                                                                                  
 }, statics.EMAIL_IN_USE.toString());
 
-// make sure pseudonym is unique (unique keyword above doesn't work)
+// make sure pseudonym is unique
 User.schema.path('pseudonym').validate(function (value, respond) {                                                                                           
     User.findOne({ pseudonym: value }, function (err, user) {                                                                                                
         if(user){
