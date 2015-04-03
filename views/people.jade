@@ -1,4 +1,4 @@
-html
+html(ng-app='people')
   head
     title #{title}
     link(rel='stylesheet', href='/components/bootstrap/bootstrap_paper.css')
@@ -7,7 +7,8 @@ html
     script(src='/components/jquery/jquery.js')
     script(src='/components/jquery/jquery-ui/jquery-ui.js')
     script(src='/javascripts/misc.js')
-  body
+    script(src='/javascripts/people/people.js')
+  body(ng-controller='PeopleCtrl')
     .header
       .header-content
         img#logo(src='/images/ping_logo.png')
@@ -19,6 +20,8 @@ html
           span.fa #{title}
         if canEdit
           a.btn.btn-default.btn-sm(href='/logout') Logout
+        if canFollow
+          a.btn.btn-default.btn-sm#followButton(ng-click='follow()') Follow
       .row
         //- LOCAL INFORMATION
         .col-sm-6
@@ -31,7 +34,7 @@ html
               strong pseudonym: #{user.pseudonym}
               br
               strong email: #{user.email}
-        .posts(ng-controller='PostController')
+        .posts(ng-controller='PostCtrl')
           if posts
             .col-sm-6
               -for(var i in posts){
