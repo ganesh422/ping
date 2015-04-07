@@ -11,7 +11,7 @@ html(ng-app='people')
   body(ng-controller='PeopleCtrl')
     .header
       .header-content
-        img#logo(src='/images/ping_logo.png')
+        img#logo(src='/images/ping_logo.png' onclick='window.location="/"')
         #container
           p#link_home(onclick='window.location="/"') home
     .container
