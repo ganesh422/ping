@@ -65,15 +65,22 @@ router.post('/signup', function(req, res){
 // =============================================
 // =================HOME PAGE===================
 // =============================================
+router.get('', requireLogin, function(req, res){
+	// can't just redirect, because safari wouldn't allow it --> "security"
+	ip_info = req.connection.remoteAddress;
+	logger.info(ip_info.toString().white.bold + ': ' + 'GET'.yellow.bold + '  request for ' + '/'.blue.bold);
+	res.render('home', {
+		user: req.user,
+		subPage: false
+	});
+});
+
 router.get('/', requireLogin, function(req, res){
 	ip_info = req.connection.remoteAddress;
 	logger.info(ip_info.toString().white.bold + ': ' + 'GET'.yellow.bold + '  request for ' + '/'.blue.bold);
-	req.session.lastPage = '/';
-	db.find_posts_by_sublist(req.user.pseudonym, ip_info, function(p_l){
-		res.render('home', {
-			user: req.user, 
-			posts: p_l
-		});
+	res.render('home', {
+		user: req.user,
+		subPage: false
 	});
 });
 
@@ -83,7 +90,6 @@ router.get('/', requireLogin, function(req, res){
 router.get('/me', requireLogin, function(req, res){
 	ip_info = req.connection.remoteAddress;
 	logger.info(ip_info.toString().white.bold + ': ' + 'GET'.yellow.bold + '  request for ' + ('/me').blue.bold);
-	req.session.lastPage = '/me';
 	db.find_posts_by_creator_pseudonym(req.user.pseudonym, ip_info, function(response_status, p_l){
         res.render('people', {
             title: 'Your profile', 
@@ -98,7 +104,6 @@ router.get('/me', requireLogin, function(req, res){
 router.get('/u/:pseudonym', requireLogin, function(req, res){
 	ip_info = req.connection.remoteAddress;
 	logger.info(ip_info.toString().white.bold + ': ' + 'GET'.yellow.bold + '  request for ' + ('/u/'+req.params.pseudonym).blue.bold);
-	req.session.lastPage = '/u/' + req.params.pseudonym;
 	db.find_user_by_pseudonym(req.params.pseudonym, ip_info, function(response_status, pseudo, id, em){
 		if(response_status == statics.ACCOUNT_NOT_FOUND){
 			res.render('error', {title: 'Oops!', errormessage: 'Oops!', message: 'There was no account found by that pseudonym!', canEdit: false});
@@ -120,8 +125,8 @@ router.get('/u/:pseudonym', requireLogin, function(req, res){
 					title: pagetitle, 
 					user: {pseudonym: pseudo, _id: id, email: em},
 					posts: p_l, 
-					canEdit: req.user.pseudonym == req.params.pseudonym,
-					canFollow: true
+					canEdit: (req.user.pseudonym == req.params.pseudonym),
+					canFollow: !(req.user.pseudonym == req.params.pseudonym)
 				});
 			});
 		}else{
@@ -147,12 +152,11 @@ router.post('/follow/:pseudonym', function(req, res){
 // ==================LOGOUT=====================
 // =============================================
 router.get('/logout', function(req, res){
-	if(req.user._id){
-		logger.info(req.connection.remoteAddress.toString().white.bold + ': ' + req.user._id.bgWhite.black.bold + ' (' + req.user.pseudonym.bold.white + ') logged out.');
+	if(req.user._id && req.user.pseudonym){
+		logger.info(req.connection.remoteAddress.toString().white.bold + ': ' + req.user._id.black.bold + ' (' + req.user.pseudonym.bold.white + ') logged out.');
 		req.user.reset();
-		req.session.reset();
+		db.userlist_remove_user(req.user.pseudonym);
 	}
-	db.userlist_remove_user(req.user.pseudonym);
 	res.redirect('/welcome');
 });
 
@@ -186,11 +190,22 @@ router.get('/fetchsubs', function(req, res){
 
 router.get('/s/:subname', function(req, res){
 	ip_info = req.connection.remoteAddress;
-	req.session.lastPage = '/s/' + req.params.subname;
 	db.find_posts_by_sub(req.params.subname.toLowerCase(), ip_info, function(response){
 		res.render('home', {
-			user: req.user
+			user: req.user,
+			subPage: true
 		});
+	});
+});
+
+router.get('/join/:subname', function(req, res){
+	ip_info = req.connection.remoteAddress;
+	db.add_sub_to_pseudonym(req.user.pseudonym, req.params.subname, ip_info, function(response){
+		if(response != statics.INTERNAL_ERROR){
+			res.status(200).json({status: response});
+		}else{
+			res.status(403).json({status: response});
+		}
 	});
 });
 
@@ -211,7 +226,6 @@ router.post('/newpost', function(req, res){
 
 router.post('/getposts', function(req, res){
     ip_info = req.connection.remoteAddress;
-    
     if(req.body.selection){
         db.find_posts_by_sub(req.body.selection, ip_info, function(p_l){
             if(p_l){
@@ -221,12 +235,16 @@ router.post('/getposts', function(req, res){
             }
         });
     }else{
-        db.find_posts_by_sublist(req.user.pseudonym, ip_info, function(p_l){
-            if(p_l){
-                res.status(200).json({posts: p_l});
-            }else{
-                res.status(403).json({error: statics.INTERNAL_ERROR});
-            }
+        db.find_posts_by_pseudonym(req.user.pseudonym, ip_info, function(response){
+			if(response){
+				if(response == statics.NO_POSTS_FOUND){
+					res.status(403).json({error: statics.NO_POSTS_FOUND});
+				}else if(response == statics.INTERNAL_ERROR){
+					res.status(403).json({error: statics.INTERNAL_ERROR});
+				}else{
+					res.status(200).json({posts:response});
+				}
+			}
         });
     }
 });
