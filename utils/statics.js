@@ -19,7 +19,7 @@ var NEWPOST_SUC = 104;
 var FOLLOW_SUC = 105;
 var INVALID_WP = 'The password you entered is invalid.';
 var ACCOUNT_NOT_FOUND = 'There is no account with that e-mail/pseudonym.';
-var NO_POSTS_FOUND = 'There are no post created by this username';
+var NO_POSTS_FOUND = 'There are no posts created by this username';
 
 module.exports.INTERNAL_ERROR = INTERNAL_ERROR;
 module.exports.EMAILPSEUDO_IN_USE = EMAILPSEUDO_IN_USE;
