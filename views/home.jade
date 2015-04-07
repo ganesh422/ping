@@ -48,10 +48,12 @@ html(ng-app='home')
                 br
                 button#submitsubbutton.btn.btn-success.btn-lg(type='submit' ng-click="submit()") Submit
         .col-sm-6#post_list_content(ng-controller='FeedCtrl' style='margin-top: 65px; float:center;')
-                .well(ng-repeat='post in posts')
-                    p#post_tag_creator(style='float:left; margin-top:0%; margin-bottom: 10px; cursor: pointer;' ng-click="post_pseudonym_click()")='{{post.creators[0]}}'
-                    br
-                    h4='{{post.title}}'
-                    p='{{post.text}}'
-                    p#post_tag_sub(style='float:right; cursor:pointer;' ng-click="post_sub_click()")='{{post.sub}}'
-                    p(style='font-size: 10px;')='{{post.date_created}}'
+            if subPage
+                a.btn.btn-default.btn-sm#joinButton(style="margin-bottom: 10px;" ng-click="joinSub()") Join
+            .well(ng-repeat='post in posts')
+                p#post_tag_creator(style='float:left; margin-top:0%; margin-bottom: 10px; cursor: pointer;' ng-click="post_pseudonym_click(post)")='{{post.creators[0]}}'
+                br
+                h4='{{post.title}}'
+                p='{{post.text}}'
+                p#post_tag_sub(style='float:right; cursor:pointer;' ng-click="post_sub_click(post)")='{{post.sub}}'
+                p(style='font-size: 10px;')='{{post.date_created}}'
