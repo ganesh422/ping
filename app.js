@@ -98,22 +98,10 @@ var auth_session = session({
     ephemeral: true /*cookie gets deleted when browser is closed*/
 });
 
-var hist_session = session({
-    cookieName: config.sessionCookie.name,
-    requestKey: config.sessionCookie.key,
-    secret: config.sessionCookie.secret,
-    duration: config.sessionCookie.defaultLifeTime,
-    activeDuration: config.sessionCookie.defaultActiveLifeTime,
-    httpOnly: true,
-    secure: true,
-    ephemeral: true
-});
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(auth_session);
-app.use(hist_session);
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
