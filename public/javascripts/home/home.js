@@ -29,7 +29,7 @@ function update_feed($scope, $http){
     
     request.error(function(data){
         if(data){
-            printError(data.toString());
+            printError(data.error.toString());
         } 
     });
 }
@@ -39,13 +39,32 @@ app.controller("FeedCtrl",["$scope", "$http", function($scope, $http){
         update_feed($scope, $http);
     };
     
-    $scope.post_pseudonym_click = function(){
-        window.location = ("/u/" + $("#post_tag_creator").text());
+    $scope.post_pseudonym_click = function(post){
+		window.location = ("/u/" + post.creators);
     };
     
-    $scope.post_sub_click = function(){
-        window.location = ("/s/" + $("#post_tag_sub").text());
+    $scope.post_sub_click = function(post){
+        window.location = ("/s/" + post.sub);
     };
+
+	$scope.joinSub = function(){
+		var request = $http({
+			method: "get",
+			url: "/join/" + document.URL.split("/")[4]
+		});
+
+		request.success(function(data){
+			if(data.status){
+				alert(data.status);
+			}
+		});
+
+		request.error(function(data){
+			if(data.status){
+				alert(data.status);
+			}
+		});
+	};
 }]);
 
 // newpost controller
