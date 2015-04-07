@@ -12,7 +12,6 @@ var statics = require('../utils/statics');
 var misc = require('../utils/misc');
 var crypto = require('crypto');
 var config = require('../config');
-var async = require('async');
 
 // store all the user's usernames
 var userlist =[];
