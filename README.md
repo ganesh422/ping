@@ -12,7 +12,7 @@ ping is a social network prototype and school project
   * Clone the repository: `$ git clone git://github.com/mkocs/ping` for the main branch or `$ git clone -b testing git://github.com/mkocs/ping` for the testing branch
   * Since there are some parts ignored via .gitignore, you will have to add them yourself in the following steps
   * In the components directory you will find 3 empty directories. You have to insert a version of Bootstrap, jQuery, jQuery UI, and AngularJS because ping uses local copies for now.
-  * Get Bootstrap/Bootswatch: download [Bootstrap](http://getbootstrap.com/) or [Bootswatch](https://bootswatch.com/paper/) and insert it in /public/components/bootstrap (call the .css file `bootstrap-paper.css` or change the name on the .jade pages itself
+  * Get Bootstrap/Bootswatch: download [Bootstrap](http://getbootstrap.com/) or [Bootswatch](https://bootswatch.com/paper/) and insert it in /public/components/bootstrap (call the .css file `bootstrap.css` or change the name on the .jade pages itself
   * Get jQuery: `$ wget http://code.jquery.com/jquery-1.11.2.js` in the /public/components/jQuery directory
   * Get JQuery UI: create a directory called `jquery-ui` in the jQuery directory, get it [here](http://jqueryui.com/download/), and extract it in the jquery-ui directory
   * Get AngularJS: `$ wget https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js` in /public/components/angular
