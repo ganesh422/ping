@@ -16,7 +16,7 @@ ping is a social network prototype and school project
   * Get jQuery: `$ wget http://code.jquery.com/jquery-1.11.2.js` in the /public/components/jQuery directory
   * Get JQuery UI: create a directory called `jquery-ui` in the jQuery directory, get it [here](http://jqueryui.com/download/), and extract it in the jquery-ui directory
   * Get AngularJS: `$ wget https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js` in /public/components/angular
-  * Next you need to [generate an SSL certificate and key](https://www.openssl.org/docs/HOWTO/certificates.txt) (for personal use or in a testing environment).
+  * Next you need to [generate an SSL certificate and key](https://www.openssl.org/docs/HOWTO/certificates.txt) (for personal use or in a testing environment) and insert the certificate (call it: `cert.pem` or change the name in app.js) and the key (call it: `key.pem` or change the name in app.js) into /sslcert in the project's root directory.
   * CD into the directory `$ cd ping`
   * Install all modules: `$ npm install` (all the modules can be found in packages.json)
   * Run the server: `$ node app` or `$ iojs app`
