@@ -21,7 +21,7 @@ ping is a social network prototype and school project
   * Install all modules: `$ npm install` (all the modules can be found in packages.json)
  
 ## Usage
-  * Run MongoDB: `mongod` to use the default path for the database or `mongod --dbpath <insert the path to the database directory here>. Read more about it [here](http://docs.mongodb.org/manual/tutorial/getting-started/)
+  * Run MongoDB: `mongod` to use the default path for the database or `mongod --dbpath <insert the path to the database directory here>`. Read more about it [here](http://docs.mongodb.org/manual/tutorial/getting-started/)
   * CD into the directory `$ cd path/to/ping
   * Run the server: `$ node app` or `$ iojs app`
   * You can override certain environment variables (you can find their names where they are used --> config.js) via `$ VARIABLE_NAME node app`
