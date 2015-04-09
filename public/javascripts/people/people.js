@@ -1,3 +1,14 @@
+document.getElementById("logo").onclick = function(){
+	window.location = "/";
+};
+
+document.getElementById("link_home").onclick = function(){
+	window.location = "/";
+};
+
+// =============================================
+// ===============ANGULAR STUFF=================
+// =============================================
 var app = angular.module("people", []);
 
 app.controller("PeopleCtrl",["$scope", "$http", function($scope, $http){

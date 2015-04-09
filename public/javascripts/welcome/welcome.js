@@ -1,13 +1,37 @@
 // =============================================
 // ===============LAUNCH WELCOME================
 // =============================================
-function start(){
-	https_redirect();
-	document.getElementById("bgcontainer").style.height = screen.height + "px";
-	document.getElementById("bgcontainer").style.width = screen.width + "px";
+https_redirect();
+document.getElementById("bgcontainer").style.height = screen.height + "px";
+document.getElementById("bgcontainer").style.width = screen.width + "px";
+document.getElementById("input_emailpseudonym").focus();
+anim();
+
+document.getElementById("link_to_signup").onclick = function(){
+	document.getElementById("signin").style.display = "none";
+	Array.prototype.slice.call(
+		document.getElementsByTagName("input"))
+		.forEach(function(elem){
+			elem.value = "";
+		}
+	);
+	document.getElementById("errors_signup").style.display = "none";
+	document.getElementById("signup").style.display = "inline";
+	document.getElementById("input_email").focus();
+};
+
+document.getElementById("link_to_signin").onclick = function(){
+	document.getElementById("signup").style.display = "none";
+	Array.prototype.slice.call(
+		document.getElementsByTagName("input"))
+		.forEach(function(elem){
+			elem.value = "";
+		}
+	);
+	document.getElementById("errors_signin").style.display = "none";
+	document.getElementById("signin").style.display = "inline";
 	document.getElementById("input_emailpseudonym").focus();
-	anim();
-}
+};
 
 // =============================================
 // ===============ANGULAR STUFF=================

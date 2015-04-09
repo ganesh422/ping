@@ -81,10 +81,32 @@ body{
 }
 /* TOP HEADER END */
 
-/* CONTENT */
 /* =========================================
- * ===           NEW POST PANEL          ===
+ * =====         CONTENT CREATION       ====
+ * ===(POST CREATION, SUB CREATION, etc.)===
  * =========================================*/
+#contentcreation{
+    display: none;
+}
+
+#newsubpanel{
+    background-color: #fff;
+    height: 150px;
+    width: 400px;
+    margin-top: 200px;
+    padding: 10px;
+    display: inline-block;
+}
+
+#subnameinput{
+    margin-top: 10px;
+    width: 300px;
+}
+
+#submitsubbutton{
+    margin-top: 12px;
+}
+
 #newpostpanel{
     background-color: #fff;
     height: 270px;
@@ -111,30 +133,8 @@ body{
 }
 
 /* =========================================
- * ===           NEW SUB PANEL           ===
+ * =======         FEED             ========
  * =========================================*/
-#newsubpanel{
-    background-color: #fff;
-    height: 150px;
-    width: 400px;
-    margin-top: 200px;
-    padding: 10px;
-    display: inline-block;
-}
-
-#subnameinput{
-    margin-top: 10px;
-    width: 300px;
-}
-
-#submitsubbutton{
-    margin-top: 12px;
-}
-
-/* =========================================
- * =====         CONTENT CREATION       ====
- * ===(POST CREATION, SUB CREATION, etc.)===
- * =========================================*/
-#contentcreation{
+#post_list_container{
     display: none;
 }

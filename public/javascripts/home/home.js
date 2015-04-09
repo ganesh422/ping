@@ -1,10 +1,22 @@
 // =============================================
 // =================LAUNCH HOME=================
 // =============================================
-function start(){
-	set_home_click_listeners();
-	https_redirect();
-}
+https_redirect();
+document.getElementById("logo").onclick = function(){
+	window.location = "/";
+};
+document.getElementById("newpost").onclick = function(){
+	document.getElementById("post_list_container").style.display = "none";
+	document.getElementById("contentcreation").style.display = "inline";
+	document.getElementById("newsubpanel").style.display = "none";
+	document.getElementById("newpostpanel").style.display = "inline-block";
+};
+document.getElementById("newsub").onclick = function(){
+	document.getElementById("post_list_container").style.display = "none";
+	document.getElementById("contentcreation").style.display = "inline";
+	document.getElementById("newsubpanel").style.display = "inline-block";
+	document.getElementById("newpostpanel").style.display = "none";
+};
 
 // =============================================
 // ===============ANGULAR STUFF=================
@@ -13,6 +25,7 @@ var app = angular.module("home", []);
 
 app.run(["$rootScope", "$http", function($rootScope, $http){
     update_feed($rootScope, $http);
+	document.getElementById("post_list_container").style.display = "inline-block";
 }]);
 
 function update_feed($scope, $http){
@@ -78,16 +91,16 @@ app.controller("FeedCtrl",["$scope", "$http", function($scope, $http){
 	};
 }]);
 
-// newpost controller
-app.controller("new_post", function($scope, $http){
-	$scope.submit = function(){
+app.controller("ContentCreationCtrl", function($scope, $http){
+	/* new post submit */
+	$scope.np_submit = function(){
 		var request = $http({
-    		method: "post",
-    		url: "/newpost",
+			method: "post",
+			url: "/newpost",
 			data: {
 				title: $scope.title,
-			    text: $scope.post_text,
-			    sub: $('#subselect').val()
+				text: $scope.post_text,
+				sub: $('#subselect').val()
 			}
 		});
 
@@ -102,11 +115,10 @@ app.controller("new_post", function($scope, $http){
 				alert(data.status);
 			}
 		});
-	}
-});
+	};
 
-app.controller("new_sub", function($scope, $http){
-	$scope.submit = function(){
+	/*new sub submit */
+	$scope.ns_submit = function(){
 		var request = $http({
 			method: "post",
 			url: "/newsub",
@@ -124,59 +136,44 @@ app.controller("new_sub", function($scope, $http){
 		request.error(function(data){
 			alert(data.status);
 		});
-	}
-});
-
-app.controller("sub_fetch", function($scope, $http){
-	$scope.followedSubs = [];
-
-	$scope.init = function () {
-    	var request = $http({
-    		method: "get",
-    		url: "/fetchsubs"
-    	});
-
-    	request.success(function(results){
-    		if(results.subs){
-    			$scope.followedSubs.length = 0;
-    			$scope.followedSubs = results.subs;
-    		}
-    	});
-
-    	request.error(function(data){
-    		if(data.errorHappened){
-				printError("couldn't fetch subs. error.");
-			}
-    	});
 	};
 });
 
-function set_home_click_listeners(){
-	$("#logo").bind("click", function(){
-		window.location = "/";
-	});
-
-	$("#newpost").bind("click", function () {
-		$("#post_list_content").hide();
-		$("#contentcreation").show();
-		$("#newsubpanel").hide();
-		$("#newpostpanel").show();
-	});
-
-	$("#newsub").bind("click", function(){
-		$("#post_list_content").hide();
-		$("#contentcreation").show();
-		$("#newsubpanel").show();
-		$("#newpostpanel").hide();
-	});
-
-	$("#logout").bind("click", function(){
-		$.ajax({
-			type: "get",
+app.controller("MiscCtrl", function($scope, $http){
+	$scope.logout = function(){
+		var request = $http({
+			method: "get",
 			url: "/logout"
-		})
-		.done(function(){
-			window.location = "/welcome";
 		});
-	});
-}
+
+		request.success(function(){
+			window.location = "/";
+		});
+
+		request.error(function(){
+			alert("An error occured.");
+		});
+	};
+
+	$scope.followedSubs = [];
+
+	$scope.sub_fetch = function () {
+		var request = $http({
+			method: "get",
+			url: "/fetchsubs"
+		});
+
+		request.success(function(results){
+			if(results.subs){
+				$scope.followedSubs.length = 0;
+				$scope.followedSubs = results.subs;
+			}
+		});
+
+		request.error(function(data){
+			if(data.errorHappened){
+				printError("couldn't fetch subs. error.");
+			}
+		});
+	};
+});

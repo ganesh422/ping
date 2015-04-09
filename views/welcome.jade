@@ -30,7 +30,7 @@ html(ng-app='welcome')
             button.btn.btn-primary.btn-lg(type='submit') Login
           hr                   
           p Need an account? 
-            a(onclick="$('#signin').hide(); $(':input').val(''); $('#errors_signup').hide(); $('#signup').show(); $('#input_email').focus();") Sign up
+            a#link_to_signup Sign up
         #signup.col-sm-6.col-sm-offset-3
           h1
             span.fa.fa-sign-in Sign up
@@ -53,7 +53,7 @@ html(ng-app='welcome')
             button.btn.btn-success.btn-lg(type='submit') Sign up
           hr                    
           p Already have an account? 
-            a(onclick="$('#signup').hide(); $(':input').val(''); $('#errors_signin').hide(); $('#signin').show(); $('#input_emailpseudonym').focus();") Login
+            a#link_to_signin Login
     #footer
       img(src='/images/ping_logo.png')           
       #http_warning
@@ -62,11 +62,6 @@ html(ng-app='welcome')
 
     script(src='/components/jquery/jquery.js')
     script(src='/javascripts/bg.js')
-    script
-      :uglify
-        $(document).ready(function() {
-          start();
-        });
     script(src='/components/angular/angular.js')
     script(src='/components/jquery/jquery-ui/jquery-ui.js')
     script(src='/javascripts/misc.js')
