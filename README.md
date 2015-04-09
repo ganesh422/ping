@@ -19,6 +19,10 @@ ping is a social network prototype and school project
   * Next you need to [generate an SSL certificate and key](https://www.openssl.org/docs/HOWTO/certificates.txt) (for personal use or in a testing environment) and insert the certificate (call it: `cert.pem` or change the name in app.js) and the key (call it: `key.pem` or change the name in app.js) into /sslcert in the project's root directory.
   * CD into the directory `$ cd ping`
   * Install all modules: `$ npm install` (all the modules can be found in packages.json)
+ 
+## Usage
+  * Run MongoDB: `$ mongod` to use the default path for the database or `$ mongod --dbpath <insert the path to the database directory here>`. Read more about it [here](http://docs.mongodb.org/manual/tutorial/getting-started/)
+  * CD into the directory `$ cd path/to/ping
   * Run the server: `$ node app` or `$ iojs app`
   * You can override certain environment variables (you can find their names where they are used --> config.js) via `$ VARIABLE_NAME node app`
   * Visit the page in your browser: [Ping](https://localhost:1338)
