@@ -41,7 +41,7 @@ app.controller("WelcomeController", function($scope, $http){
 				errors_signin.show();
 			});
 		}
-	}
+	};
 
 	$scope.signup = function(){
 		if($("#input_email").val() == "" || $("#input_name").val() == "" || $("#input_pseudonym").val() == "" || $("#input_passwd").val() == "" || $("#input_passwdr").val() == ""){
