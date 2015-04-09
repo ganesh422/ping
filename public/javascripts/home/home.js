@@ -1,3 +1,14 @@
+// =============================================
+// =================LAUNCH HOME=================
+// =============================================
+function start(){
+	set_home_click_listeners();
+	https_redirect();
+}
+
+// =============================================
+// ===============ANGULAR STUFF=================
+// =============================================
 var app = angular.module("home", []);
 
 app.run(["$rootScope", "$http", function($rootScope, $http){
@@ -139,19 +150,6 @@ app.controller("sub_fetch", function($scope, $http){
     	});
 	};
 });
-
-function home_start(){
-	$('textarea').on('keyup',function(){
-	  var spanwidth = $('span').css('width');
-	  $('textarea').css('width',spanwidth) 
-	});
-
-	set_home_click_listeners();
-
-	https_redirect();
-
-	$("#contentcreation").hide();
-}
 
 function set_home_click_listeners(){
 	$("#logo").bind("click", function(){
