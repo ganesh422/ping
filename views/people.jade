@@ -1,14 +1,13 @@
 doctype html
 html(ng-app='people')
   head
+    meta(charset='utf8')
+    meta(name="theme-color" content="#ffffff")
+    meta(name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1")
+    meta(name="description" content="A community based, open source social network")
     title #{title}
     link(rel='stylesheet', href='/components/bootstrap/bootstrap.css')
     link(rel='stylesheet', href='/stylesheets/people.css')
-    script(src='/components/angular/angular.js')
-    script(src='/components/jquery/jquery.js')
-    script(src='/components/jquery/jquery-ui/jquery-ui.js')
-    script(src='/javascripts/misc.js')
-    script(src='/javascripts/people/people.js')
   body(ng-controller='PeopleCtrl')
     .header
       .header-content
@@ -45,3 +44,9 @@ html(ng-app='people')
                   p(style='float:right;')=posts[i].sub
                   p(style='font-size: 10px;')=posts[i].date_created
               -}
+
+    script(src='/components/angular/angular.js')
+    script(src='/components/jquery/jquery.js')
+    script(src='/components/jquery/jquery-ui/jquery-ui.js')
+    script(src='/javascripts/misc.js')
+    script(src='/javascripts/people/people.js')

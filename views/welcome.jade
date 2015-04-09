@@ -1,22 +1,13 @@
 doctype html
 html(ng-app='welcome')
   head
+    meta(charset='utf8')
+    meta(name="theme-color" content="#ffffff")
+    meta(name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1")
+    meta(name="description" content="A community based, open source social network")
     title Welcome to Ping!
     link(rel='stylesheet', href='/components/bootstrap/bootstrap.css')
-    //- load bootstrap css
     link(rel='stylesheet', href='stylesheets/welcome.css')
-    script(src='/components/angular/angular.js')
-    script(src='/components/jquery/jquery.js')
-    script(src='/components/jquery/jquery-ui/jquery-ui.js')
-    script(src='/javascripts/bg.js')
-    script(src='/javascripts/misc.js')
-    script(src='/javascripts/welcome/welcome.js')
-    script(src='/javascripts/start.js')
-    script.
-      $(document).ready(function() {
-      https_redirect();
-      start_welcome();
-      });
   body
     .content(ng-controller='WelcomeController')
       #bgcontainer
@@ -68,3 +59,16 @@ html(ng-app='welcome')
       #http_warning
         p HTTP is very insecure, please visit the HTTPS page. 
           a(href='/about/http') Why?
+
+    script(src='/components/jquery/jquery.js')
+    script(src='/javascripts/bg.js')
+    script
+      :uglify
+        $(document).ready(function() {
+          start();
+        });
+    script(src='/components/angular/angular.js')
+    script(src='/components/jquery/jquery-ui/jquery-ui.js')
+    script(src='/javascripts/misc.js')
+    script(src='/javascripts/welcome/welcome.js')
+    script(src='/javascripts/start.js')

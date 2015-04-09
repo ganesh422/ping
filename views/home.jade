@@ -2,27 +2,12 @@ doctype html
 html(ng-app='home')
   head
     meta(charset='utf8')
-    //-color for chrome
     meta(name="theme-color" content="#ffffff")
+    meta(name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1")
+    meta(name="description" content="A community based, open source social network")
     title Ping
-    //-link(rel="shortcut icon" type="image/x-icon" href="favicon.ico")
     link(rel='stylesheet', href='/components/bootstrap/bootstrap.css')
     link(rel='stylesheet', href='/stylesheets/home.css')
-    script(src='/components/angular/angular.js')
-    script(src='/components/jquery/jquery.js')
-    script(src='/components/jquery/jquery-ui/jquery-ui.js')
-
-    //- javascript files
-    script(src='/javascripts/home/home.js')
-    script(src='/javascripts/start.js')
-    script(src='/javascripts/misc.js')
-    script(src='/javascripts/info.js')
-
-    script.
-        $(document).ready(function() {
-            home_start();
-        });
-
   body
     .header
         .header-content
@@ -58,3 +43,14 @@ html(ng-app='home')
                 p='{{post.text}}'
                 p#post_tag_sub(style='float:right; cursor:pointer;' ng-click="post_sub_click(post)")='{{post.sub}}'
                 p(style='font-size: 10px;')='{{post.date_created}}'
+    script(src='/components/angular/angular.js')
+    script(src='/components/jquery/jquery.js')
+    script(src='/components/jquery/jquery-ui/jquery-ui.js')
+    script(src='/javascripts/home/home.js')
+    script(src='/javascripts/misc.js')
+    script(src='/javascripts/info.js')
+    script
+        :uglify
+            $(document).ready(function () {
+                start();
+            });
