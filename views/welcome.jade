@@ -1,4 +1,5 @@
-html
+doctype html
+html(ng-app='welcome')
   head
     title Welcome to Ping!
     link(rel='stylesheet', href='/components/bootstrap/bootstrap.css')
@@ -16,7 +17,7 @@ html
       https_redirect();
       start_welcome();
       });
-  body(ng-app='welcome')
+  body
     .content(ng-controller='WelcomeController')
       #bgcontainer
         img.bgfade(src='/images/austria_sg.jpg')                
