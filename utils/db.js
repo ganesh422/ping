@@ -33,8 +33,8 @@ module.exports = {
 		find_posts_by_sub(subname, ip, callback);
 	}, find_posts_by_sublist: function(pseudonym, ip, callback){ // find posts by the user's list of communities
 		find_posts_by_sublist(pseudonym, ip, callback);
-	}, find_posts_by_friend: function(pseudonym, ip, callback){
-		find_posts_by_friend(pseudonym, ip, callback);
+	}, find_posts_by_friendlist: function(pseudonym, ip, callback){
+		find_posts_by_friendlist(pseudonym, ip, callback);
 	}, find_posts_by_pseudonym: function(pseudonym, ip, callback){ // find posts for a user (communities, followed people)
 		find_posts_by_pseudonym(pseudonym, ip, callback)
 	}, follow: function(senderpseudonym, whouserwantstofollow, ip, callback){
@@ -400,7 +400,7 @@ function find_posts_by_sublist(pseudonym, ip, returnData){
 /*
  * get list of posts by the user's list of followed people
  */
-function find_posts_by_friend(pseudonym, ip, returnData){
+function find_posts_by_friendlist(pseudonym, ip, returnData){
 	dbcon.on('error', function(err){
 		logger.error(err.toString().cyan.italic + '. Is ' + ' mongod '.red.bold + ' running?');
 		returnData(statics.INTERNAL_ERROR);
@@ -453,20 +453,20 @@ function find_posts_by_pseudonym(pseudonym, ip, returnData){
 		returnData(statics.INTERNAL_ERROR);
 	});
 
-	find_posts_by_friend(pseudonym, ip, function(response_friendlist){
-		if(response_friendlist && response_friendlist != statics.NO_POSTS_FOUND && response_friendlist != statics.INTERNAL_ERROR){
-			find_posts_by_sublist(pseudonym, ip, function(response_subs){
-				if(response_subs && response_subs != statics.NO_POSTS_FOUND && response_subs != statics.INTERNAL_ERROR) {
-					response_friendlist.forEach(function (ent1) {
-						response_subs.forEach(function (ent2) {
-							if (ent1.id == ent2.id) {
+	find_posts_by_sublist(pseudonym, ip, function(response_subs){
+		if(response_subs && response_subs != statics.NO_POSTS_FOUND && response_subs != statics.INTERNAL_ERROR){
+			find_posts_by_friendlist(pseudonym, ip, function(response_friendlist_subs){
+				if(response_friendlist_subs && response_friendlist_subs != statics.NO_POSTS_FOUND && response_friendlist_subs != statics.INTERNAL_ERROR){
+					response_subs.forEach(function(ent1){
+						response_friendlist_subs.forEach(function (ent2){
+							if(ent1.id == ent2.id){
 								response_subs.splice(response_subs.indexOf(ent2));
 							}
 						});
 					});
-					if (response_subs != undefined && response_friendlist != undefined) {
+					if (response_subs != undefined && response_friendlist_subs != undefined) {
 						// combine arrays and sort by date
-						returnData(response_friendlist.concat(response_subs).sort(function (date1, date2) {
+						returnData(response_friendlist_subs.concat(response_subs).sort(function (date1, date2) {
 							return date2.date_created - date1.date_created
 						}));
 					}
