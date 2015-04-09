@@ -79,10 +79,12 @@ body{
     -ms-user-select: none;
     user-select: none;
 }
-
 /* TOP HEADER END */
 
 /* CONTENT */
+/* =========================================
+ * ===           NEW POST PANEL          ===
+ * =========================================*/
 #newpostpanel{
     background-color: #fff;
     height: 270px;
@@ -108,6 +110,9 @@ body{
     width: 150px;
 }
 
+/* =========================================
+ * ===           NEW SUB PANEL           ===
+ * =========================================*/
 #newsubpanel{
     background-color: #fff;
     height: 150px;
@@ -126,7 +131,10 @@ body{
     margin-top: 12px;
 }
 
-#content{
-    display: inline-block;
+/* =========================================
+ * =====         CONTENT CREATION       ====
+ * ===(POST CREATION, SUB CREATION, etc.)===
+ * =========================================*/
+#contentcreation{
+    display: none;
 }
-/* CONTENT END */
