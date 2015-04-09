@@ -1,4 +1,15 @@
 // =============================================
+// ===============LAUNCH WELCOME================
+// =============================================
+function start(){
+	https_redirect();
+	document.getElementById("bgcontainer").style.height = screen.height + "px";
+	document.getElementById("bgcontainer").style.width = screen.width + "px";
+	document.getElementById("input_emailpseudonym").focus();
+	anim();
+}
+
+// =============================================
 // ===============ANGULAR STUFF=================
 // =============================================
 var app = angular.module("welcome", []);
@@ -85,19 +96,3 @@ app.controller("WelcomeController", function($scope, $http){
 		}
 	}
 });
-
-// =============================================
-// ===============LAUNCH WELCOME================
-// =============================================
-function welcome_start(){
-	$("#signup").hide();
-	$("#errors_signin").hide();
-	$("#errors_signup").hide();
-    //var dg_H = screen.height;
-    //var dg_W = screen.width;
-    $("#bgcontainer img.bgfade").hide();
-    $("#bgcontainer").css({"height":"120%","width":"100%"});
-    anim();
-    //$(window).resize(function(){window.location.href=window.location.href});
-    $("#input_emailpseudonym").focus();
-}
