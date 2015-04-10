@@ -467,7 +467,7 @@ function find_posts_by_pseudonym(pseudonym, ip, returnData){
 					if (response_subs != undefined && response_friendlist_subs != undefined) {
 						// combine arrays and sort by date
 						returnData(response_friendlist_subs.concat(response_subs).sort(function (date1, date2) {
-							return date2.date_created - date1.date_created
+							return date2.date_created - date1.date_created;
 						}));
 					}
 				}
