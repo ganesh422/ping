@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var logger = require('../utils/logger');
+var printer = require('../utils/prtr');
 var db = require('../utils/db');
 var statics = require('../utils/statics');
 
@@ -23,7 +24,7 @@ function requireLogin(req, res, next){
 // =============================================
 router.get('/welcome', function(req, res){
 	ip_info = req.connection.remoteAddress;
-	logger.info(ip_info.toString().white.bold + ': ' + 'GET'.yellow.bold + '  request for ' + '/welcome'.blue.bold);
+	printer.printRouteRequest(req);
 
 	// if user is already logged in
 	// redirect to his/her profile
@@ -37,7 +38,7 @@ router.get('/welcome', function(req, res){
 
 router.post('/login', function(req, res){
 	ip_info = req.connection.remoteAddress;
-	logger.info(ip_info.toString().white.bold + ': ' + 'POST'.yellow.bold + ' request for ' + '/login'.blue.bold);
+	printer.printRouteRequest(req);
     db.login_mdb(req.body.emailpseudonym, req.body.passwd, ip_info, function(response_status, pseudonym, id, email){
         if(pseudonym && id && response_status == statics.LOGIN_SUC){
         	req.user.pseudonym = pseudonym;
@@ -52,7 +53,7 @@ router.post('/login', function(req, res){
 
 router.post('/signup', function(req, res){
 	ip_info = req.connection.remoteAddress;
-	logger.info(ip_info.toString().white.bold + ': ' + 'POST'.yellow.bold + ' request for ' + '/signup'.blue.bold);
+	printer.printRouteRequest(req);
 	db.insert_signup_mdb(req.body.email, req.body.name, req.body.pseudonym, req.body.passwd, ip_info, function(response_status){
 		if(response_status == statics.REGISTRATION_SUC){
            	res.status(200).json({status: response_status});
@@ -68,7 +69,7 @@ router.post('/signup', function(req, res){
 router.get('', requireLogin, function(req, res){
 	// can't just redirect, because safari wouldn't allow it --> "security"
 	ip_info = req.connection.remoteAddress;
-	logger.info(ip_info.toString().white.bold + ': ' + 'GET'.yellow.bold + '  request for ' + '/'.blue.bold);
+	printer.printRouteRequest(req);
 	res.render('home', {
 		user: req.user,
 		subPage: false
@@ -77,7 +78,7 @@ router.get('', requireLogin, function(req, res){
 
 router.get('/', requireLogin, function(req, res){
 	ip_info = req.connection.remoteAddress;
-	logger.info(ip_info.toString().white.bold + ': ' + 'GET'.yellow.bold + '  request for ' + '/'.blue.bold);
+	printer.printRouteRequest(req);
 	res.render('home', {
 		user: req.user,
 		subPage: false
@@ -89,7 +90,7 @@ router.get('/', requireLogin, function(req, res){
 // =============================================
 router.get('/me', requireLogin, function(req, res){
 	ip_info = req.connection.remoteAddress;
-	logger.info(ip_info.toString().white.bold + ': ' + 'GET'.yellow.bold + '  request for ' + ('/me').blue.bold);
+	printer.printRouteRequest(req);
 	db.find_posts_by_creator_pseudonym(req.user.pseudonym, ip_info, function(response_status, p_l){
         res.render('people', {
             title: 'Your profile', 
@@ -103,7 +104,7 @@ router.get('/me', requireLogin, function(req, res){
 
 router.get('/u/:pseudonym', requireLogin, function(req, res){
 	ip_info = req.connection.remoteAddress;
-	logger.info(ip_info.toString().white.bold + ': ' + 'GET'.yellow.bold + '  request for ' + ('/u/'+req.params.pseudonym).blue.bold);
+	printer.printRouteRequest(req);
 	db.find_user_by_pseudonym(req.params.pseudonym, ip_info, function(response_status, pseudo, id, em){
 		if(response_status == statics.ACCOUNT_NOT_FOUND){
 			res.render('error', {title: 'Oops!', errormessage: 'Oops!', message: 'There was no account found by that pseudonym!', canEdit: false});
@@ -138,7 +139,7 @@ router.get('/u/:pseudonym', requireLogin, function(req, res){
 
 router.post('/follow/:pseudonym', function(req, res){
 	ip_info = req.connection.remoteAddress;
-	logger.info(ip_info.toString().white.bold + ': ' + 'POST'.yellow.bold + ' request for ' + ('/follow/'+req.params.pseudonym).blue.bold);
+	printer.printRouteRequest(req);
 	db.follow(req.user.pseudonym, req.params.pseudonym, ip_info, function(response){
 		if(response == statics.FOLLOW_SUC){
 			res.status(200).json({status: 'You started following ' + req.params.pseudonym});
@@ -165,7 +166,7 @@ router.get('/logout', function(req, res){
 // =============================================
 router.post('/newsub', requireLogin, function(req, res){
 	ip_info = req.connection.remoteAddress;
-	logger.info(ip_info.toString().white.bold + ': ' + 'POST'.yellow.bold + ' request for ' + '/newsub'.blue.bold);
+	req.printRouteRequest(req);
 	db.insert_new_sub(req.body.name, req.user.pseudonym, ip_info, function(response_status){
 		if(response_status == statics.NEWSUB_SUC){
 			res.status(200).json({status: response_status});
@@ -214,7 +215,7 @@ router.get('/join/:subname', function(req, res){
 // =============================================
 router.post('/newpost', function(req, res){
 	ip_info = req.connection.remoteAddress;
-	logger.info(ip_info.toString().white.bold + ': ' + 'POST'.yellow.bold + ' request for ' + '/newpost'.blue.bold);
+	printer.printRouteRequest(req);
 	db.insert_new_post(req.user.pseudonym, req.body.title, req.body.text, req.body.sub, ip_info, function(response){
 		if(response == statics.NEWPOST_SUC){
 			res.status(200).json({status: 'New post successfully created!'});
