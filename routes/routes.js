@@ -30,7 +30,7 @@ router.get('/welcome', function(req, res){
 	// redirect to his/her profile
 	if(req.user._id){
 		logger.info(ip_info.toString().white.bold + ': ' + req.user._id.bgWhite.black.bold + ' (' + req.user.pseudonym + ') was redirected to /people/me.');
-		res.redirect('/people/me');
+		res.redirect('/');
 	}else{
 		res.render('welcome.jade');
 	}
@@ -93,9 +93,9 @@ router.get('/me', requireLogin, function(req, res){
 	printer.printRouteRequest(req);
 	db.find_posts_by_creator_pseudonym(req.user.pseudonym, ip_info, function(response_status, p_l){
         res.render('people', {
-            title: 'Your profile', 
+            title: 'Your profile',
             user: req.user,
-            posts: p_l, 
+            posts: p_l,
             canEdit: true,
             canFollow: false
         });
@@ -123,9 +123,9 @@ router.get('/u/:pseudonym', requireLogin, function(req, res){
 			// get user's posts
 			db.find_posts_by_creator_pseudonym(req.params.pseudonym, ip_info, function(response_status, p_l){
 				res.render('people', {
-					title: pagetitle, 
+					title: pagetitle,
 					user: {pseudonym: pseudo, _id: id, email: em},
-					posts: p_l, 
+					posts: p_l,
 					canEdit: (req.user.pseudonym == req.params.pseudonym),
 					canFollow: !(req.user.pseudonym == req.params.pseudonym)
 				});
