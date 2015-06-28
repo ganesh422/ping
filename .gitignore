@@ -1,0 +1,9 @@
+/node_modules
+/public/components/angular/*
+/public/components/bootstrap/*
+/public/components/jquery/*
+/sslcert
+/.idea
+npm-debug.log
+*.xml
+.env

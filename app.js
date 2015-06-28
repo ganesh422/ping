@@ -1,27 +1,42 @@
+require('dotenv').load();
+
 //modules
-var express = require('express');
-var http = require('http');
-var https = require('https');
-var path = require('path');
-var favicon = require('serve-favicon');
+var express      = require('express');
+var http         = require('http');
+var https        = require('https');
+var path         = require('path');
+var favicon      = require('serve-favicon');
 var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var fs = require('fs');
-var logger = require('./utils/logger');
-var sys = require('sys');
-var domain = require('domain');
-var cluster = require('cluster');
-var db = require('./utils/db');
+var bodyParser   = require('body-parser');
+var session      = require('client-sessions');
+var fs           = require('fs');
+var logger       = require('./utils/logger');
+var util         = require('util');
+var domain       = require('domain');
+var cluster      = require('cluster');
+var config       = require('./config');
+
+require('events').EventEmitter.prototype._maxListeners = 100; // fix event memory leak
 
 // routes
-var routes = require('./routes/index');
-var people = require('./routes/people');
-var posts = require('./routes/posts');
-var subs = require('./routes/subs');
-var home = require('./routes/home');
-var users = require('./routes/users');
-var ajax = require('./routes/ajax');
-var images = require('./routes/images');
+var routes = require('./routes/routes');
+
+/* ==================================================================================
+ *                                  VARIABLES
+ */
+
+var http_server;
+var https_server;
+
+var privateKey  = fs.readFileSync('./sslcert/key.pem');
+var certificate = fs.readFileSync('./sslcert/cert.pem');
+
+var options = {key: privateKey, cert: certificate};
+
+/*
+ *                                END VARIABLES
+/* ==================================================================================*/
+
 
 // allow input in console
 // react to input in console
@@ -60,34 +75,9 @@ stdin.addListener("data", function(d) {
     }
 });
 
-/* ==================================================================================
- *                                  VARIABLES
- */
-
-var http_server;
-var https_server;
-
-// port variables
-var http_port = process.env.port || 1337;
-var https_port = process.env.port || 1338;
-
-var privateKey  = fs.readFileSync('./sslcert/key.pem');
-var certificate = fs.readFileSync('./sslcert/cert.pem');
-
-var options = {key: privateKey, cert: certificate};
-
-/*
- *                                END VARIABLES
-/* ==================================================================================*/
-
-
-
 
 // initialise express
 var app = express();
-
-logger.debug("Overriding 'Express' logger");
-
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -98,27 +88,25 @@ app.set('development', function () { app.locals.pretty = true; });
 // uncomment after placing your favicon in /public
 app.use(favicon(__dirname + '/public/favicon.ico'));
 
+// authentication cookies
+var auth_session = session({
+    cookieName: config.userCookie.name, 
+    requestKey: config.userCookie.key, /*overrides cookieName for the key name added to the request object*/ 
+    secret: config.userCookie.secret, 
+    duration: config.userCookie.defaultLifeTime /*2 hours*/,
+    activeDuration: config.userCookie.defaultActiveLifeTime, /*if the client performs an action within 1 hour, the cookie will live for another 2 hours*/
+    httpOnly: true, /*client side js can not access the cookie*/
+    secure: true/*,
+    ephemeral: true /*cookie gets deleted when browser is closed*/
+});
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(auth_session);
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
-app.use('/people', people);
-app.use('/posts', posts);
-app.use('/subs', subs);
-app.use('/home', home);
-app.use('/users', users);
-app.use('/ajax', ajax);
-app.use('/images', images);
-app.use('/hello/:name', function(req, res){
-    res.send('Hello, ' + req.params.name);
-});
-/* GET demo page. */
-app.get('/demo', function(req, res) {
-  logger.info('GET request for /  ::--> returned demo.jade');
-  res.render('demo.jade', {"title": "ping"});
-});
 
 // logging
 app.use(require('morgan')({ "stream": logger.stream }));
@@ -154,6 +142,7 @@ app.use(function(err, req, res, next) {
     });
 });
 
+// cluster start
 function start(){
     //db.db_create_ALL_sub();
 
@@ -180,10 +169,10 @@ function start(){
             throw new Error('error at starting http/https server');
         });
         d.run(function(){
-            http_server = http.createServer(app).listen(http_port);
-            logger.info(('HTTP Server started on port ' + http_port).magenta.bold);
-            https_server = https.createServer(options, app).listen(https_port);
-            logger.info(('HTTPS Server started on port ' + https_port).magenta.bold);
+            http_server = http.createServer(app).listen(config.http.port);
+            logger.info(('HTTP Server started on port ' + config.http.port).magenta.bold);
+            https_server = https.createServer(options, app).listen(config.https.port);
+            logger.info(('HTTPS Server started on port ' + config.https.port).magenta.bold);
         });
     }
 

@@ -1,5 +1,52 @@
-extends layout
+doctype html
+html(ng-app='people')
+  head
+    meta(charset='utf8')
+    meta(name="theme-color" content="#ffffff")
+    meta(name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1")
+    meta(name="description" content="A community based, open source social network")
+    title #{title}
+    link(rel='stylesheet', href='/components/bootstrap/bootstrap.css')
+    link(rel='stylesheet', href='/stylesheets/people.css')
+  body(ng-controller='PeopleCtrl')
+    .header
+      .header-content
+        img#logo(src='/images/ping_logo.png')
+        #container
+          p#link_home home
+    .container
+      .page-header.text-center
+        h1
+          span.fa #{title}
+        if canEdit
+          a.btn.btn-default.btn-sm(href='/logout') Logout
+        if canFollow
+          a.btn.btn-default.btn-sm#followButton(ng-click='follow()') Follow
+      .row
+        //- LOCAL INFORMATION
+        .col-sm-6
+          .well
+            h3
+              span.fa.fa-user  Local
+            p
+              strong id: #{user._id}
+              br
+              strong pseudonym: #{user.pseudonym}
+              br
+              strong email: #{user.email}
+        .posts(ng-controller='PostCtrl')
+          if posts
+            .col-sm-6
+              -for(var i in posts){
+                .well
+                  h4=posts[i].title
+                  p=posts[i].text
+                  p(style='float:right;')=posts[i].sub
+                  p(style='font-size: 10px;')=posts[i].date_created
+              -}
 
-block content
-   h1= title
-   p Welcome to #{title}
+    script(src='/components/angular/angular.js')
+    script(src='/components/jquery/jquery.js')
+    script(src='/components/jquery/jquery-ui/jquery-ui.js')
+    script(src='/javascripts/misc.js')
+    script(src='/javascripts/people/people.js')

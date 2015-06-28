@@ -1,48 +1,51 @@
-html
+doctype html
+html(ng-app='home')
   head
     meta(charset='utf8')
-    //color for chrome
     meta(name="theme-color" content="#ffffff")
+    meta(name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1")
+    meta(name="description" content="A community based, open source social network")
     title Ping
-    //link(rel="shortcut icon" type="image/x-icon" href="favicon.ico")
-    link(rel='stylesheet', href='/components/bootstrap/bootstrap_paper.css')
+    link(rel='stylesheet', href='/components/bootstrap/bootstrap.css')
     link(rel='stylesheet', href='/stylesheets/home.css')
-    script(src='/components/angular/angular.js')
-    script(src='/components/jquery/jquery.js')
-    script(src='/components/jquery/jquery-ui/jquery-ui.js')
-
-    // javascript files
-    script(src='/javascripts/home/home.js')
-    script(src='/javascripts/ajax.js')
-    script(src='/javascripts/bg.js')
-    script(src='/javascripts/start.js')
-    script(src='/javascripts/misc.js')
-    script(src='/javascripts/info.js')
-
-    script.
-        $(document).ready(function() {
-            home_start();
-        });
-
   body
-    .header
+    .header(ng-controller="MiscCtrl")
         .header-content
             img#logo(src='/images/ping_logo.png')
             #container
                 p#newpost create new post
                 p#newsub create new sub
+                p#logout(ng-click="logout()") logout
                 p#errors
+                p#link_profile(onclick='window.location="/me"') #{user.pseudonym}
     center
-        #content(ng-app="content")
-            #newpostpanel(ng-controller="new_post")
-                textarea#textinput.longInput.input(cols='30' ng-model="post_text" placeholder="what's on your mind?")
+        #contentcreation(ng-controller="ContentCreationCtrl")
+            #newpostpanel
+                input#input_title.form-control(type='text' placeholder="title (max. 140)" maxlength="140" ng-model='title')
+                textarea#textinput.form-control.longInput(cols='30' maxlength="2000" ng-model="post_text" placeholder="what's on your mind? (max. 2000)")
                 br
-                #postpanelbottom(ng-controller="sub_fetch" ng-init="init()")
-                    select#subselect(ng-click="init()")
+                #postpanelbottom(ng-controller="MiscCtrl" ng-init="sub_fetch()")
+                    select#subselect.form-control(ng-click="init()")
                         option(ng-repeat="sub in followedSubs track by $index" value="{{sub}}") {{sub}}
-                    input#submitpostbutton(type="button" value="Submit" ng-click="submit()")
-            #newsubpanel(ng-controller="new_sub")
-                input#subnameinput.input(type="text" placeholder="enter the sub's new name..." maxlength="20" ng-model="sub_name")
+                    br
+                    button#submitpostbutton.btn.btn-info.btn-lg(type='submit' ng-click="np_submit()") Submit
+            #newsubpanel
+                input#subnameinput.form-control(type="text" placeholder="enter the sub's new name..." maxlength="20" ng-model="sub_name")
                 br
-                input#submitsubbutton(type="button" value="Submit" ng-click="submit()")
-        
+                button#submitsubbutton.btn.btn-success.btn-lg(type='submit' ng-click="ns_submit()") Submit
+        .col-sm-6#post_list_container(ng-controller='FeedCtrl' style='margin-top: 65px; float:center;')
+            if subPage
+                a.btn.btn-default.btn-sm#joinButton(style="margin-bottom: 10px;" ng-click="joinSub()") Join
+            .well#post_list(ng-repeat='post in posts')
+                p#post_tag_creator(style='float:left; margin-top:0%; margin-bottom: 10px; cursor: pointer;' ng-click="post_pseudonym_click(post)")='{{post.creators[0]}}'
+                br
+                h4='{{post.title}}'
+                p='{{post.text}}'
+                p#post_tag_sub(style='float:right; cursor:pointer;' ng-click="post_sub_click(post)")='{{post.sub}}'
+                p(style='font-size: 10px;')='{{post.date_created}}'
+    script(src='/components/angular/angular.js')
+    script(src='/components/jquery/jquery.js')
+    script(src='/components/jquery/jquery-ui/jquery-ui.js')
+    script(src='/javascripts/misc.js')
+    script(src='/javascripts/home/home.js')
+    script(src='/javascripts/info.js')
